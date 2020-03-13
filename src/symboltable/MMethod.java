@@ -4,21 +4,21 @@ import java.util.HashMap;
 
 public class MMethod extends MIdentifier
 {
-	protected MIdentifier ReturnType=null;
+	protected String ReturnType=null;
 	protected ArrayList<MVar> paramList = new ArrayList<MVar>();
 	protected HashMap<String, MVar> varTable = new HashMap<String, MVar>();
 
 	
-	public MMethod(MIdentifier _returnType, MIdentifier parent,String name, int row, int col) {
+	public MMethod(String _returnType, MIdentifier parent,String name, int row, int col) {
 		super(parent,name, "method",row, col);
 		ReturnType=_returnType;
 	}
 	
-	public MIdentifier GetReturnType()
+	public String GetReturnType()
 	{
 		return ReturnType;
 	}
-	public void SetReturnType(MIdentifier i)
+	public void SetReturnType(String i)
 	{
 		ReturnType=i;
 	}

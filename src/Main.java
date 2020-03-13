@@ -1,7 +1,7 @@
 import java.io.*;
 import visitor.*;
 import syntaxtree.*;
-
+import symboltable.*;
 class MyVisitor extends DepthFirstVisitor {
 	public void visit(VarDeclaration n) {
 		Identifier id = (Identifier)n.f1;
@@ -17,7 +17,8 @@ public class Main {
 		try {
 			InputStream in = new FileInputStream(args[0]);
 			Node root = new MiniJavaParser(in).Goal();	
-			root.accept(new MyVisitor());
+			MType ClassList = new MClassList();
+			root.accept(new SymbolTableBuilder(),ClassList);
 		} catch (ParseException e) {
 			e.printStackTrace();
 		} catch (TokenMgrError e) {

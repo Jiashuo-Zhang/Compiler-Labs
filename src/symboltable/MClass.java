@@ -7,14 +7,14 @@ public class MClass extends MIdentifier
 	protected MClass parentClass;
 	private HashMap<String, MMethod> methodTable = new HashMap<String, MMethod>();
 	private HashMap<String, MVar> varTable = new HashMap<String, MVar>();
-	MClass()
+	public MClass()
 	{
 		
 	}
-	MClass(String name, int row, int col) {
+	public MClass(String name, int row, int col) {
 		super(name, "class", row, col);
 	}
-	MClass(MClass parent,String name,int row,int col)
+	public MClass(MClass parent,String name,int row,int col)
 	{
 		super(name,"class",row,col);
 		parentClass=parent;
@@ -36,7 +36,7 @@ public class MClass extends MIdentifier
 			return "Confilct Variable Declarations :" + v.GetName() ;
 		}
 	}
-	public String insertMethod(MMethod m) {
+	public String InsertMethod(MMethod m) {
 		if (!methodTable.containsKey(m.GetName())) {
 			methodTable.put(m.GetName(), m);
 			return null;

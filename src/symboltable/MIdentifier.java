@@ -3,21 +3,21 @@ public class MIdentifier extends MType
 {
 	protected MIdentifier parent=null;
 	protected String name;
-	MIdentifier(){
+	public MIdentifier(){
 		
 	}
-	MIdentifier(MIdentifier p,String n,String Type,int r,int c)
+	public MIdentifier(MIdentifier p,String n,String Type,int r,int c)
 	{
 		super(Type,r,c);
 		name=n;
 		parent=p;
 	}
-	MIdentifier(String n,String Type,int row, int col)
+	public MIdentifier(String n,String Type,int row, int col)
 	{
 		super(Type,row,col);
 		name=n;
 	}
-	MIdentifier(String n,int row,int col)
+	public MIdentifier(String n,int row,int col)
 	{
 		super(null,row,col);
 		name=n;

@@ -3,15 +3,15 @@ public class MType {
 	protected String type;
 	protected int row=0;
 	protected int col=-0;
-	MType()
+	public MType()
 	{
 		
 	}
-	MType(String s)
+	public MType(String s)
 	{
 		type=s;
 	}
-	MType(String s, int r,int c)
+	public MType(String s, int r,int c)
 	{
 		type=s;
 		row=r;
