@@ -1,6 +1,7 @@
 package visitor;
 
 import syntaxtree.*;
+import symboltable.*;
 
 public class TraverseVisitor extends GJDepthFirst<MType, MType> {
 	/**
@@ -9,7 +10,7 @@ public class TraverseVisitor extends GJDepthFirst<MType, MType> {
 	 * Identifier() f12 -> ")" f13 -> "{" f14 -> ( VarDeclaration() )* f15 -> (
 	 * Statement() )* f16 -> "}" f17 -> "}"
 	 */
-	public MType visit(MainClass n, MType newClass) {
+	public MType visit(MainClass n, MType argu) {
 		n.f0.accept(this, argu);
 
 		MIdentifier id = (MIdentifier) n.f1.accept(this, argu);
@@ -222,7 +223,7 @@ public class TraverseVisitor extends GJDepthFirst<MType, MType> {
 	public MType visit(MessageSend n, MType argu) {
 		MType newType = n.f0.accept(this, argu);
 		String name = null;
-		if (newType instanceof Identifier) {
+		if (newType instanceof MIdentifier) {
 			MVar newVar = argu.getVar(((MIdentifier) newType).getName());
 			name = newVar.getType();
 		} else {
@@ -238,7 +239,7 @@ public class TraverseVisitor extends GJDepthFirst<MType, MType> {
 		n.f4.accept(this, argu);
 		n.f5.accept(this, argu);
 
-		return new MType(newMethod.getReturnType(), type.getLine(), type.getColumn());
+		return new MType(newMethod.getReturnType(), newType.getLine(), newType.getColumn());
 	}
 
 	/**
