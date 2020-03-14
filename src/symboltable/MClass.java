@@ -2,72 +2,69 @@ package symboltable;
 
 import java.util.HashMap;
 
-public class MClass extends MIdentifier
-{
-	protected MClass parentClass;
+import exception.RedefinitionException;
+
+public class MClass extends MIdentifier {
+	protected MClass parentClass = null;
 	private HashMap<String, MMethod> methodTable = new HashMap<String, MMethod>();
 	private HashMap<String, MVar> varTable = new HashMap<String, MVar>();
-	public MClass()
-	{
-		
+
+	public MClass() {
+
 	}
+
 	public MClass(String name, int row, int col) {
 		super(name, "class", row, col);
 	}
-	public MClass(MClass parent,String name,int row,int col)
-	{
-		super(name,"class",row,col);
-		parentClass=parent;
+
+	public MClass(MClass parent, String name, int row, int col) {
+		super(name, "class", row, col);
+		parentClass = parent;
 	}
-	
-	public MClass GetParentClass()
-	{
+
+	public MClass getParentClass() {
 		return parentClass;
 	}
-	public void SetParentClass(MClass p)
-	{
-		parentClass=p;
+
+	public void setParentClass(MClass p) {
+		parentClass = p;
 	}
-	public String InsertVar(MVar v) {///return ERROR MSG
-		if (!varTable.containsKey(v.GetName())) {
-			varTable.put(v.GetName(), v);
-			return null;
-		} else {
-			return "Confilct Variable Declarations :" + v.GetName() ;
-		}
+
+	public void insertVar(MVar v) throws RedefinitionException {
+		if (!varTable.containsKey(v.getName()))
+			varTable.put(v.getName(), v);
+		else
+			throw new RedefinitionException("Variable", v.getName(), v.getRow(), v.getCol());
 	}
-	public String InsertMethod(MMethod m) {
-		if (!methodTable.containsKey(m.GetName())) {
-			methodTable.put(m.GetName(), m);
-			return null;
-		} else {
-			return "Conflict Method Declarations :" + m.GetName();
-		}
+
+	public void insertMethod(MMethod m) throws RedefinitionException {
+		if (!methodTable.containsKey(m.getName()))
+			methodTable.put(m.getName(), m);
+		else
+			throw new RedefinitionException("Method", m.getName(), m.getRow(), m.getCol());
 	}
-	public MVar GetVar(String name) {
+
+	public MVar getVar(String name) {
 		MVar v = varTable.get(name);
 		if (v == null && this.parentClass != null) {
-			v = this.parentClass.GetVar(name);
+			v = this.parentClass.getVar(name);
 		}
 		return v;
 	}
-	public HashMap<String, MVar> GetVarTable()
-	{
+
+	public HashMap<String, MVar> getVarTable() {
 		return varTable;
 	}
-	public MMethod GetMethod(String name)
-	{
-		MMethod m= methodTable.get(name);
+
+	public MMethod getMethod(String name) {
+		MMethod m = methodTable.get(name);
 		if (m == null && this.parentClass != null) {
-			m = this.parentClass.GetMethod(name);
+			m = this.parentClass.getMethod(name);
 		}
 		return m;
 	}
-	public HashMap<String, MMethod> GetMethodTable()
-	{
+
+	public HashMap<String, MMethod> getMethodTable() {
 		return methodTable;
 	}
-	
-	
-	
 }

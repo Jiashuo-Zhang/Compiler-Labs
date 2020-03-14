@@ -4,6 +4,20 @@ import syntaxtree.*;
 import symboltable.*;
 
 public class TraverseVisitor extends GJDepthFirst<MType, MType> {
+
+	MClassList allClassList = null;
+
+	/**
+	 * f0 -> MainClass() f1 -> ( TypeDeclaration() )* f2 -> <EOF>
+	 */
+	public MType visit(Goal n, MType argu) {
+		allClassList = (MClassList) argu;
+		n.f0.accept(this, argu);
+		n.f1.accept(this, argu);
+		n.f2.accept(this, argu);
+		return null;
+	}
+
 	/**
 	 * f0 -> "class" f1 -> Identifier() f2 -> "{" f3 -> "public" f4 -> "static" f5
 	 * -> "void" f6 -> "main" f7 -> "(" f8 -> "String" f9 -> "[" f10 -> "]" f11 ->
@@ -47,7 +61,7 @@ public class TraverseVisitor extends GJDepthFirst<MType, MType> {
 		n.f0.accept(this, argu);
 
 		MIdentifier id = (MIdentifier) n.f1.accept(this, argu);
-		MClass newClass = argu.getMethod(id.getName());
+		MClass newClass = allClassList.getClass(id.getName());
 
 		n.f2.accept(this, newClass);
 		n.f3.accept(this, newClass);
@@ -64,7 +78,7 @@ public class TraverseVisitor extends GJDepthFirst<MType, MType> {
 		n.f0.accept(this, argu);
 
 		MIdentifier id = (MIdentifier) n.f1.accept(this, argu);
-		MClass newClass = argu.getMethod(id.getName());
+		MClass newClass = allClassList.getClass(id.getName());
 
 		n.f2.accept(this, argu);
 		n.f3.accept(this, argu);
@@ -152,7 +166,7 @@ public class TraverseVisitor extends GJDepthFirst<MType, MType> {
 		MType _ret = n.f0.accept(this, argu);
 		n.f1.accept(this, argu);
 		n.f2.accept(this, argu);
-		return new MType("boolean", _ret.getLine(), _ret.getColumn());
+		return new MType("boolean", _ret.getRow(), _ret.getCol());
 	}
 
 	/**
@@ -162,7 +176,7 @@ public class TraverseVisitor extends GJDepthFirst<MType, MType> {
 		MType _ret = n.f0.accept(this, argu);
 		n.f1.accept(this, argu);
 		n.f2.accept(this, argu);
-		return new MType("boolean", _ret.getLine(), _ret.getColumn());
+		return new MType("boolean", _ret.getRow(), _ret.getCol());
 	}
 
 	/**
@@ -172,7 +186,7 @@ public class TraverseVisitor extends GJDepthFirst<MType, MType> {
 		MType _ret = n.f0.accept(this, argu);
 		n.f1.accept(this, argu);
 		n.f2.accept(this, argu);
-		return new MType("int", _ret.getLine(), _ret.getColumn());
+		return new MType("int", _ret.getRow(), _ret.getCol());
 	}
 
 	/**
@@ -182,7 +196,7 @@ public class TraverseVisitor extends GJDepthFirst<MType, MType> {
 		MType _ret = n.f0.accept(this, argu);
 		n.f1.accept(this, argu);
 		n.f2.accept(this, argu);
-		return new MType("int", _ret.getLine(), _ret.getColumn());
+		return new MType("int", _ret.getRow(), _ret.getCol());
 	}
 
 	/**
@@ -192,7 +206,7 @@ public class TraverseVisitor extends GJDepthFirst<MType, MType> {
 		MType _ret = n.f0.accept(this, argu);
 		n.f1.accept(this, argu);
 		n.f2.accept(this, argu);
-		return new MType("int", _ret.getLine(), _ret.getColumn());
+		return new MType("int", _ret.getRow(), _ret.getCol());
 	}
 
 	/**
@@ -203,7 +217,7 @@ public class TraverseVisitor extends GJDepthFirst<MType, MType> {
 		n.f1.accept(this, argu);
 		n.f2.accept(this, argu);
 		n.f3.accept(this, argu);
-		return new MType("int", _ret.getLine(), _ret.getColumn());
+		return new MType("int", _ret.getRow(), _ret.getCol());
 	}
 
 	/**
@@ -213,7 +227,7 @@ public class TraverseVisitor extends GJDepthFirst<MType, MType> {
 		MType _ret = n.f0.accept(this, argu);
 		n.f1.accept(this, argu);
 		n.f2.accept(this, argu);
-		return new MType("int", _ret.getLine(), _ret.getColumn());
+		return new MType("int", _ret.getRow(), _ret.getCol());
 	}
 
 	/**
@@ -224,7 +238,7 @@ public class TraverseVisitor extends GJDepthFirst<MType, MType> {
 		MType newType = n.f0.accept(this, argu);
 		String name = null;
 		if (newType instanceof MIdentifier) {
-			MVar newVar = argu.getVar(((MIdentifier) newType).getName());
+			MVar newVar = ((MMethod) argu).getVar(((MIdentifier) newType).getName());
 			name = newVar.getType();
 		} else {
 			name = newType.getType();
@@ -239,7 +253,7 @@ public class TraverseVisitor extends GJDepthFirst<MType, MType> {
 		n.f4.accept(this, argu);
 		n.f5.accept(this, argu);
 
-		return new MType(newMethod.getReturnType(), newType.getLine(), newType.getColumn());
+		return new MType(newMethod.getReturnType(), newType.getRow(), newType.getCol());
 	}
 
 	/**
@@ -250,7 +264,7 @@ public class TraverseVisitor extends GJDepthFirst<MType, MType> {
 	public MType visit(PrimaryExpression n, MType argu) {
 		MType _ret = n.f0.accept(this, argu);
 		if (_ret instanceof MIdentifier) {
-			MVar newVar = argu.getVar(((MIdentifier) _ret).getName());
+			MVar newVar = ((MMethod) argu).getVar(((MIdentifier) _ret).getName());
 			((MIdentifier) _ret).setType(newVar.getType());
 		}
 		return _ret;
@@ -293,7 +307,7 @@ public class TraverseVisitor extends GJDepthFirst<MType, MType> {
 	 */
 	public MType visit(ThisExpression n, MType argu) {
 		n.f0.accept(this, argu);
-		MClass newClass = ((MMethod) argu).getParentClass();
+		MClass newClass = (MClass) ((MMethod) argu).getParent();
 		return new MType(newClass.getName(), n.f0.beginLine, n.f0.beginColumn);
 	}
 

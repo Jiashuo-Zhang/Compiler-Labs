@@ -1,16 +1,16 @@
 package symboltable;
-public class MVar extends MIdentifier
-{
-	public MVar()
-	{
+
+public class MVar extends MIdentifier {
+	public MVar() {
+
 	}
-	public MVar(MIdentifier p,String name,String Type,int r,int c)
-	{
-		super(p,name,Type,r,c);
+
+	public MVar(MIdentifier p, String name, String type, int r, int c) {
+		super(p, name, type, r, c);
 	}
-	public MVar(String name,String Type,int r,int c)
-	{
-		super(name,Type,r,c);
-		this.SetParent(null);
+
+	public MVar(String name, String type, int r, int c) {
+		super(name, type, r, c);
+		this.setParent(null);
 	}
 }

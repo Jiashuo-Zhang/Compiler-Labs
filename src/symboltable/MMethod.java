@@ -1,72 +1,62 @@
 package symboltable;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class MMethod extends MIdentifier
-{
-	protected String ReturnType=null;
+import exception.RedefinitionException;
+
+public class MMethod extends MIdentifier {
+	protected String returnType = null;
 	protected ArrayList<MVar> paramList = new ArrayList<MVar>();
 	protected HashMap<String, MVar> varTable = new HashMap<String, MVar>();
 
-	
-	public MMethod(String _returnType, MIdentifier parent,String name, int row, int col) {
-		super(parent,name, "method",row, col);
-		ReturnType=_returnType;
+	public MMethod(String _returnType, MIdentifier parent, String name, int row, int col) {
+		super(parent, name, "method", row, col);
+		returnType = _returnType;
 	}
-	
-	public String GetReturnType()
-	{
-		return ReturnType;
+
+	public String getReturnType() {
+		return returnType;
 	}
-	public void SetReturnType(String i)
-	{
-		ReturnType=i;
+
+	public void setReturnType(String i) {
+		returnType = i;
 	}
-	
-	public String InsertVar(MVar v)///return ERROR Msg
-	{
-		if(!this.varTable.containsKey(v.GetName()))
-		{
-			varTable.put(v.GetName(), v);
-			return null;
-		}
+
+	public void insertVar(MVar v) throws RedefinitionException {
+		if (!this.varTable.containsKey(v.getName()))
+			varTable.put(v.getName(), v);
 		else
-		{
-			return "Confilct Variables Declarations :" + v.GetName() ;
-		}
+			throw new RedefinitionException("Variable", v.getName(), v.getRow(), v.getCol());
 	}
-	public String InsertParam(MVar p)
-	{
+
+	public void insertParam(MVar p) throws RedefinitionException {
 		paramList.add(p);
-		return InsertVar(p);
+		insertVar(p);
 	}
-	public int GetParamNum()
-	{
+
+	public int getParamNum() {
 		return paramList.size();
 	}
-	public ArrayList<MVar> GetParamList()
-	{ 
+
+	public ArrayList<MVar> getParamList() {
 		return paramList;
 	}
-	public HashMap<String, MVar> GetVarTable()
-	{
+
+	public HashMap<String, MVar> getVarTable() {
 		return varTable;
 	}
-	public MVar GetParam(int n)//start from zero
-	{
-		if (paramList.size() <= n) 
+
+	public MVar getParam(int n) { // start from zero
+		if (paramList.size() <= n)
 			return null;
-		else 
+		else
 			return paramList.get(n);
 	}
-	public MVar GetVar(String name)////if not found, search from the parent class
-	{
-		if (varTable.containsKey(name)) {
+
+	public MVar getVar(String name) { // if not found, search from the parent class
+		if (varTable.containsKey(name))
 			return varTable.get(name);
-		}
-		return ((MClass)this.parent).GetVar(name);
+		return ((MClass) this.parent).getVar(name);
 	}
-	
-	
-	
 }

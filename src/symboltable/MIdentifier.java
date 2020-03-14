@@ -1,43 +1,42 @@
 package symboltable;
-public class MIdentifier extends MType
-{
-	protected MIdentifier parent=null;
+
+public class MIdentifier extends MType {
+	protected MIdentifier parent = null;
 	protected String name;
-	public MIdentifier(){
-		
+
+	public MIdentifier() {
+
 	}
-	public MIdentifier(MIdentifier p,String n,String Type,int r,int c)
-	{
-		super(Type,r,c);
-		name=n;
-		parent=p;
+
+	public MIdentifier(MIdentifier p, String n, String type, int r, int c) {
+		super(type, r, c);
+		name = n;
+		parent = p;
 	}
-	public MIdentifier(String n,String Type,int row, int col)
-	{
-		super(Type,row,col);
-		name=n;
+
+	public MIdentifier(String n, String type, int row, int col) {
+		super(type, row, col);
+		name = n;
 	}
-	public MIdentifier(String n,int row,int col)
-	{
-		super(null,row,col);
-		name=n;
+
+	public MIdentifier(String n, int row, int col) {
+		super(null, row, col);
+		name = n;
 	}
-	public MIdentifier GetParent()
-	{
+
+	public MIdentifier getParent() {
 		return parent;
 	}
-	public void SetParent(MIdentifier p)
-	{
-		parent=p;
+
+	public void setParent(MIdentifier p) {
+		parent = p;
 	}
-	public String GetName()
-	{
+
+	public String getName() {
 		return name;
 	}
-	public void SetName(String n)
-	{
-		name=n;
+
+	public void setName(String n) {
+		name = n;
 	}
-	
-	
 }
