@@ -1,5 +1,4 @@
 package testcase;
-
 public class Test1 {
 	int n;
 	static int n() {

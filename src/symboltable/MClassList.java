@@ -11,7 +11,10 @@ public class MClassList extends MType {
 		if (this.classList.containsKey(c.getName()))
 			throw new RedefinitionException("Class", c.getName(), c.getRow(), c.getCol());
 		else
+		{
 			classList.put(c.getName(), c);
+			System.out.println("Class: " + c.getName());
+		}
 	}
 
 	public MClass getClass(String name) {

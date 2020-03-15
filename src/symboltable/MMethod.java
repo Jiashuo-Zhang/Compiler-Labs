@@ -25,13 +25,17 @@ public class MMethod extends MIdentifier {
 
 	public void insertVar(MVar v) throws RedefinitionException {
 		if (!this.varTable.containsKey(v.getName()))
+		{
 			varTable.put(v.getName(), v);
+			System.out.println("MethodName: " + this.name+", VarName: "+v.getName()+", VarType: "+v.getType());
+		}
 		else
 			throw new RedefinitionException("Variable", v.getName(), v.getRow(), v.getCol());
 	}
 
 	public void insertParam(MVar p) throws RedefinitionException {
 		paramList.add(p);
+		System.out.print("(IsParam) ");
 		insertVar(p);
 	}
 

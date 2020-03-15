@@ -8,7 +8,7 @@ import exception.Abort;
 import exception.RedefinitionException;
 
 public class SymbolTableBuilder extends GJDepthFirst<MType, MType> {
-	private MClassList classTable;
+	protected  MClassList classTable;
 
 	//
 	// Auto class visitors--probably don't need to be overridden.
@@ -66,6 +66,7 @@ public class SymbolTableBuilder extends GJDepthFirst<MType, MType> {
 	 */
 	public MType visit(Goal n, MType argu) {
 		MType _ret = null;
+		this.classTable = (MClassList)argu;
 		n.f0.accept(this, argu);
 		n.f1.accept(this, argu);
 		n.f2.accept(this, argu);
@@ -85,7 +86,7 @@ public class SymbolTableBuilder extends GJDepthFirst<MType, MType> {
 		MIdentifier nowClassID = (MIdentifier) n.f1.accept(this, argu);
 		MClass nowClass = new MClass(nowClassID.getName(), nowClassID.getRow(), nowClassID.getCol());
 		try {
-			classTable.insertClass(nowClass);
+			this.classTable.insertClass(nowClass);
 		} catch (RedefinitionException e) {
 			Abort.abort(e);
 		}

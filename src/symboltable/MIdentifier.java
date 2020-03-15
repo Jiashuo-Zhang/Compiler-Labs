@@ -1,5 +1,5 @@
 package symboltable;
-
+import java.io.*;
 public class MIdentifier extends MType {
 	protected MIdentifier parent = null;
 	protected String name;
