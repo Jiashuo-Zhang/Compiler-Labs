@@ -157,15 +157,27 @@ public class SymbolTableBuilder extends GJDepthFirst<MType, MType> {
 	 * f5 -> ( VarDeclaration() )* f6 -> ( MethodDeclaration() )* f7 -> "}"
 	 */
 	public MType visit(ClassExtendsDeclaration n, MType argu) {
-		MType _ret = null;
-		n.f0.accept(this, argu);
-		n.f1.accept(this, argu);
-		n.f2.accept(this, argu);
-		n.f3.accept(this, argu);
-		n.f4.accept(this, argu);
-		n.f5.accept(this, argu);
-		n.f6.accept(this, argu);
-		n.f7.accept(this, argu);
+		MType _ret=null;
+	    n.f0.accept(this, argu);
+	      
+	    MIdentifier nowclassId = ((MIdentifier) n.f1.accept(this, argu));
+	    MClass nowClass = new MClass(nowclassId.getName(), nowclassId.getRow(), nowclassId.getCol());
+	    try {
+			classTable.insertClass(nowClass);
+		} catch (RedefinitionException e) {
+			Abort.abort(e);
+		}
+	      
+	    n.f2.accept(this, nowClass);
+	      
+	    String p = n.f3.f0.toString();
+	    nowClass.setParentClassName(p);
+	      
+	    n.f3.accept(this, nowClass);
+	    n.f4.accept(this, nowClass);
+	    n.f5.accept(this, nowClass);
+	    n.f6.accept(this, nowClass);
+	    n.f7.accept(this, nowClass);
 		return _ret;
 	}
 
@@ -207,7 +219,7 @@ public class SymbolTableBuilder extends GJDepthFirst<MType, MType> {
 		n.f0.accept(this, argu);
 		MType returnType = n.f1.accept(this, argu);
 		MIdentifier nowID = (MIdentifier) n.f2.accept(this, argu);
-		MMethod nowMethod = new MMethod(returnType.getType(), (MIdentifier) argu, nowID.getName(), returnType.getRow(),
+		MMethod nowMethod = new MMethod(returnType.getType(), (MIdentifier)argu, nowID.getName(), returnType.getRow(),
 				returnType.getCol());
 		try {
 			((MClass) argu).insertMethod(nowMethod);

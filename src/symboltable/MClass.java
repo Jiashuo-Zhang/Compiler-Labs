@@ -6,6 +6,7 @@ import exception.RedefinitionException;
 
 public class MClass extends MIdentifier {
 	protected MClass parentClass = null;
+	protected String parentClassName;
 	private HashMap<String, MMethod> methodTable = new HashMap<String, MMethod>();
 	private HashMap<String, MVar> varTable = new HashMap<String, MVar>();
 
@@ -21,7 +22,13 @@ public class MClass extends MIdentifier {
 		super(name, "class", row, col);
 		parentClass = parent;
 	}
+	public String getParentClassName() {
+		return parentClassName;
+	}
 
+	public void setParentClassName(String p) {
+		parentClassName = p;
+	}
 	public MClass getParentClass() {
 		return parentClass;
 	}
@@ -44,7 +51,7 @@ public class MClass extends MIdentifier {
 		if (!methodTable.containsKey(m.getName()))
 		{
 			methodTable.put(m.getName(), m);
-			System.out.println("ClassName: " + this.name+", MethodName: "+m.getName());
+			System.out.println("ClassName: " + this.name+", MethodName: "+m.getName()+", ReturnType: "+m.getReturnType());
 		}
 		else
 			throw new RedefinitionException("Method", m.getName(), m.getRow(), m.getCol());
