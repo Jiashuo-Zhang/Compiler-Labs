@@ -6,6 +6,8 @@ package syntaxtree;
 
 import java.util.*;
 
+import symboltable.MType;
+
 /**
  * Represents an optional grammar list, e.g. ( A )*
  */

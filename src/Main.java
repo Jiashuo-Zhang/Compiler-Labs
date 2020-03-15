@@ -16,12 +16,14 @@ public class Main {
 	public static void main(String args[]){
 		try {
 			InputStream in = new FileInputStream(args[0]);
-			Node root = new MiniJavaParser(in).Goal();	
+			Node root = new MiniJavaParser(in).Goal();
 			System.out.println("########### Begin to build the Symbol Table! ############ ");
-			MType ClassList = new MClassList();
-			root.accept(new SymbolTableBuilder(),ClassList);
+			MType classList = new MClassList();
+			root.accept(new SymbolTableBuilder(),classList);
 			System.out.println("################# Symbol Table is Built! ################ ");
-			
+			root.accept(new UndefinedIdentifierVisitor(),classList);
+			root.accept(new TypeCheckVisitor(),classList);
+			System.out.println("No Error!");
 		} catch (ParseException e) {
 			e.printStackTrace();
 		} catch (TokenMgrError e) {

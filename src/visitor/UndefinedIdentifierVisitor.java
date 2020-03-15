@@ -28,6 +28,7 @@ public class UndefinedIdentifierVisitor extends TraverseVisitor {
 		MVar newVar = ((MMethod) argu).getVar(id.getName());
 		if (newVar == null)
 			Abort.abort(new UndefinedIdentifierException("Array", id.getName(), id.getRow(), id.getCol()));
+		n.f1.accept(this, argu);
 		n.f2.accept(this, argu);
 		n.f3.accept(this, argu);
 		n.f4.accept(this, argu);

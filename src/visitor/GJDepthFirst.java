@@ -6,8 +6,6 @@ package visitor;
 import syntaxtree.*;
 import java.util.*;
 
-import exception.RedefinitionException;
-
 /**
  * Provides default methods which visit each node in the tree in depth-first
  * order.  Your visitors may extend this class.
