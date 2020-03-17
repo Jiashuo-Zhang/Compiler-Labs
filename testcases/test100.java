@@ -1,17 +1,17 @@
 class test100{
     public static void main(String[] a){
-		System.out.println(new Test().start());
+		int b;
+		System.out.println(b.start());
     }
 }
 
 class Test {
     int i;
-
     public int start(){
 		Fun f;
 		f = new Fun();
 		
-		i = f.next(f.next(f.next(0, true)), true);
+		i = f.next(f.next(f.next(0, true), false), true);
 	
 		return i;
     }
@@ -24,3 +24,16 @@ class Fun {
 		return i;
     }
 }
+
+class B {
+	public B fun() {
+		return new A();
+	}
+}
+
+class A extends B {
+	public B fun(){
+		return new A();
+	}
+}
+
