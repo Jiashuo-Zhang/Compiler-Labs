@@ -1,7 +1,6 @@
 class test100{
     public static void main(String[] a){
-		int b;
-		System.out.println(b.start());
+		System.out.println(new Test().start());
     }
 }
 
@@ -32,7 +31,7 @@ class B {
 }
 
 class A extends B {
-	public B fun(){
+	public A fun(){
 		return new A();
 	}
 }
