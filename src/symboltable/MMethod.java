@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import exception.RedefinitionException;
+import exception.UndefinedDeclarationException;
 
 public class MMethod extends MIdentifier {
 	protected String returnType = null;
@@ -24,12 +25,10 @@ public class MMethod extends MIdentifier {
 	}
 
 	public void insertVar(MVar v) throws RedefinitionException {
-		if (!this.varTable.containsKey(v.getName()))
-		{
+		if (!this.varTable.containsKey(v.getName())) {
 			varTable.put(v.getName(), v);
-			System.out.println("MethodName: " + this.name+", VarName: "+v.getName()+", VarType: "+v.getType());
-		}
-		else
+			System.out.println("MethodName: " + this.name + ", VarName: " + v.getName() + ", VarType: " + v.getType());
+		} else
 			throw new RedefinitionException("Variable", v.getName(), v.getRow(), v.getCol());
 	}
 
@@ -62,5 +61,13 @@ public class MMethod extends MIdentifier {
 		if (varTable.containsKey(name))
 			return varTable.get(name);
 		return ((MClass) this.parent).getVar(name);
+	}
+
+	public void checkUndefinedDeclaration(MClassList classList) throws UndefinedDeclarationException {
+		checkTypeDeclared(returnType, classList, getRow(), getCol());
+		for (String key : varTable.keySet()) {
+			MVar var = varTable.get(key);
+			checkTypeDeclared(var.getType(), classList, var.getRow(), var.getCol());
+		}
 	}
 }

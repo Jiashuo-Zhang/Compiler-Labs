@@ -1,5 +1,7 @@
 package symboltable;
-import java.io.*;
+
+import exception.UndefinedDeclarationException;
+
 public class MIdentifier extends MType {
 	protected MIdentifier parent = null;
 	protected String name;
@@ -38,5 +40,14 @@ public class MIdentifier extends MType {
 
 	public void setName(String n) {
 		name = n;
+	}
+
+	public void checkTypeDeclared(String type, MClassList classList, int row, int col)
+			throws UndefinedDeclarationException {
+		if (type.equals("int") || type.equals("int[]") || type.equals("boolean") || type.equals("void")
+				|| type.equals("String[]"))
+			return;
+		if (!classList.hasClass(type))
+			throw new UndefinedDeclarationException(type, row, col);
 	}
 }

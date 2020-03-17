@@ -6,12 +6,11 @@ class test100{
 
 class Test {
     int i;
-
     public int start(){
 		Fun f;
 		f = new Fun();
 		
-		i = f.next(f.next(f.next(0, true)), true);
+		i = f.next(f.next(f.next(0, true), false), true);
 	
 		return i;
     }
@@ -24,3 +23,16 @@ class Fun {
 		return i;
     }
 }
+
+class B {
+	public B fun() {
+		return new A();
+	}
+}
+
+class A extends B {
+	public A fun(){
+		return new A();
+	}
+}
+
