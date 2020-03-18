@@ -96,9 +96,14 @@ public class MClass extends MIdentifier {
 		}
 	}
 
-	public void traverse(HashSet<String> visited, MClassList classList)
+	public void traverse(String ori, HashSet<String> visited, MClassList classList)
 			throws InheritanceLoopException, UndefinedDeclarationException {
-		visited.add(getName());
+		if (getName().equals(ori)) {
+			if (visited.contains(getName()))
+				throw new InheritanceLoopException(getName(), getRow(), getCol());
+			else
+				visited.add(getName());
+		}
 		if (getParentClassName() != null) {
 			MClass c = classList.getClass(getParentClassName());
 			if (c != null)
@@ -107,11 +112,8 @@ public class MClass extends MIdentifier {
 				throw new UndefinedDeclarationException(getParentClassName(), getRow(), getCol());
 		}
 		MClass fa = getParentClass();
-		if (fa != null) {
-			if (visited.contains(fa.getName()))
-				throw new InheritanceLoopException(fa.getName(), fa.getRow(), fa.getCol());
-			fa.traverse(visited, classList);
-		}
+		if (fa != null)
+			fa.traverse(ori, visited, classList);
 		checkUndefinedDeclaration(classList);
 	}
 

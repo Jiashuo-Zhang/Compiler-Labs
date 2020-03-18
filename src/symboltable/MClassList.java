@@ -56,7 +56,7 @@ public class MClassList extends MType {
 		for (String key : classList.keySet()) {
 			MClass nowClass = classList.get(key);
 			if (!visited.contains(nowClass.getName()))
-				nowClass.traverse(visited, this);
+				nowClass.traverse(nowClass.getName(), visited, this);
 		}
 	}
 }
