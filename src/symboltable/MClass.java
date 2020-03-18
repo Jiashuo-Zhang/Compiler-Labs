@@ -96,25 +96,27 @@ public class MClass extends MIdentifier {
 		}
 	}
 
-	public void traverse(String ori, HashSet<String> visited, MClassList classList)
+	public void traverse(HashSet<String> visited, HashSet<String> checked, MClassList classList)
 			throws InheritanceLoopException, UndefinedDeclarationException {
-		if (getName().equals(ori)) {
-			if (visited.contains(getName()))
-				throw new InheritanceLoopException(getName(), getRow(), getCol());
-			else
-				visited.add(getName());
-		}
-		if (getParentClassName() != null) {
-			MClass c = classList.getClass(getParentClassName());
-			if (c != null)
-				setParentClass(c);
-			else
-				throw new UndefinedDeclarationException(getParentClassName(), getRow(), getCol());
+		visited.add(getName());
+		if (!checked.contains(getName())) {
+			checked.add(getName());
+			if (getParentClassName() != null) {
+				MClass c = classList.getClass(getParentClassName());
+				if (c != null)
+					setParentClass(c);
+				else
+					throw new UndefinedDeclarationException(getParentClassName(), getRow(), getCol());
+			}
+			checkUndefinedDeclaration(classList);
 		}
 		MClass fa = getParentClass();
-		if (fa != null)
-			fa.traverse(ori, visited, classList);
-		checkUndefinedDeclaration(classList);
+		if (fa != null) {
+			if (visited.contains(fa.getName()))
+				throw new InheritanceLoopException(fa.getName(), fa.getRow(), fa.getCol());
+			else
+				fa.traverse(visited, checked, classList);
+		}
 	}
 
 	public void checkOverload() throws OverloadException {

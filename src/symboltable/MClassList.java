@@ -52,11 +52,10 @@ public class MClassList extends MType {
 	}
 
 	private void traverse() throws InheritanceLoopException, UndefinedDeclarationException {
-		HashSet<String> visited = new HashSet<String>();
+		HashSet<String> checked = new HashSet<String>();
 		for (String key : classList.keySet()) {
 			MClass nowClass = classList.get(key);
-			if (!visited.contains(nowClass.getName()))
-				nowClass.traverse(nowClass.getName(), visited, this);
+			nowClass.traverse(new HashSet<String>(), checked, this);
 		}
 	}
 }
