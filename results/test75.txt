@@ -1,0 +1,44 @@
+No error in source code!
+###################### Source Code ###################### 
+class test75{
+    public static void main(String[] a){
+	System.out.println(new Test().start());
+    }
+}
+
+class Test2 extends Test{
+
+    public int start2(){
+
+	Test test1;
+	int j;
+
+	j = test1.start();
+
+	return 0;
+    }
+}
+
+class Test {
+
+    Test test;
+
+    public int start(){
+	
+	return 0;
+    }
+
+}
+
+########### Begin to build the Symbol Table! ############ 
+Class: test75
+ClassName: test75, MethodName: main, ReturnType: void
+(IsParam) MethodName: main, VarName: a, VarType: String[]
+Class: Test2
+ClassName: Test2, MethodName: start2, ReturnType: int
+MethodName: start2, VarName: test1, VarType: Test
+MethodName: start2, VarName: j, VarType: int
+Class: Test
+ClassName: Test, VarName: test, VarType: Test
+ClassName: Test, MethodName: start, ReturnType: int
+################# Symbol Table is Built! ################ 

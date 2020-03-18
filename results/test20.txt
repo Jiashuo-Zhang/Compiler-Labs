@@ -1,0 +1,34 @@
+Error in source code!
+###################### Source Code ###################### 
+class test20{
+    public static void main(String[] a){
+	System.out.println(new Test().start());
+    }
+}
+
+class Test{
+
+    int result;
+	
+    public int start(){
+
+	int[] op;
+
+	op = new int[10];
+
+	result = op.start();		// TE
+
+	return 0;
+    }
+}
+
+########### Begin to build the Symbol Table! ############ 
+Class: test20
+ClassName: test20, MethodName: main, ReturnType: void
+(IsParam) MethodName: main, VarName: a, VarType: String[]
+Class: Test
+ClassName: Test, VarName: result, VarType: int
+ClassName: Test, MethodName: start, ReturnType: int
+MethodName: start, VarName: op, VarType: int[]
+################# Symbol Table is Built! ################ 
+Undefined Class: int[] at row 17 col 18.

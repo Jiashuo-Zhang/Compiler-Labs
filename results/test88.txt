@@ -1,0 +1,40 @@
+Error in source code!
+###################### Source Code ###################### 
+class test88{
+    public static void main(String[] a){
+	System.out.println(new Test().start());
+    }
+}
+
+class Test {
+
+    Test test;
+    int i;
+
+    public int start(){
+
+	test = test.next(test, i);	// TE
+	
+	return 0;
+    }
+
+    public Test next(int i, Test t, boolean b){
+
+	return test;
+    }
+}
+
+########### Begin to build the Symbol Table! ############ 
+Class: test88
+ClassName: test88, MethodName: main, ReturnType: void
+(IsParam) MethodName: main, VarName: a, VarType: String[]
+Class: Test
+ClassName: Test, VarName: test, VarType: Test
+ClassName: Test, VarName: i, VarType: int
+ClassName: Test, MethodName: start, ReturnType: int
+ClassName: Test, MethodName: next, ReturnType: Test
+(IsParam) MethodName: next, VarName: i, VarType: int
+(IsParam) MethodName: next, VarName: t, VarType: Test
+(IsParam) MethodName: next, VarName: b, VarType: boolean
+################# Symbol Table is Built! ################ 
+Parameter Mismatched: Expected 3 parameter(s), but passed 2 parameter(s) at row 14 col 26.

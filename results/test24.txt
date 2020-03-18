@@ -1,0 +1,29 @@
+Error in source code!
+###################### Source Code ###################### 
+class test24{
+    public static void main(String[] a){
+	System.out.println(new Test().start());
+    }
+}
+
+class Test{
+
+    boolean result;
+	
+    public int start(){
+
+	result = !1;	// TE
+
+	return 0;
+    }
+}
+
+########### Begin to build the Symbol Table! ############ 
+Class: test24
+ClassName: test24, MethodName: main, ReturnType: void
+(IsParam) MethodName: main, VarName: a, VarType: String[]
+Class: Test
+ClassName: Test, VarName: result, VarType: boolean
+ClassName: Test, MethodName: start, ReturnType: int
+################# Symbol Table is Built! ################ 
+Type Mismatched: Expected type boolean, but type int passed at row 13 col 19.

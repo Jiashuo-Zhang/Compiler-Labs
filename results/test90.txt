@@ -1,0 +1,39 @@
+No error in source code!
+###################### Source Code ###################### 
+class test90{
+    public static void main(String[] a){
+	System.out.println(new Test().start());
+    }
+}
+
+class Test {
+
+    Test test;
+    int[] i;
+
+    public int start(){
+
+	i = new int[10];
+
+	test = test.next(i);
+	
+	return 0;
+    }
+
+    public Test next(int[] i){
+
+	return test;
+    }
+}
+
+########### Begin to build the Symbol Table! ############ 
+Class: test90
+ClassName: test90, MethodName: main, ReturnType: void
+(IsParam) MethodName: main, VarName: a, VarType: String[]
+Class: Test
+ClassName: Test, VarName: test, VarType: Test
+ClassName: Test, VarName: i, VarType: int[]
+ClassName: Test, MethodName: start, ReturnType: int
+ClassName: Test, MethodName: next, ReturnType: Test
+(IsParam) MethodName: next, VarName: i, VarType: int[]
+################# Symbol Table is Built! ################ 
