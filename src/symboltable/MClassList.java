@@ -58,4 +58,19 @@ public class MClassList extends MType {
 			nowClass.traverse(new HashSet<String>(), checked, this);
 		}
 	}
+	
+	public void buildVDTable() {
+		for (String key : classList.keySet()) {
+			MClass nowClass = classList.get(key);
+			nowClass.buildVDTable();
+		}
+	}
+	
+	public int alloc(int p) {
+		for (String key : classList.keySet()) {
+			MClass nowClass = classList.get(key);
+			p = nowClass.alloc(p);
+		}
+		return p;
+	}
 }
