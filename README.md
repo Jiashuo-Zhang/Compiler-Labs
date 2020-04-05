@@ -89,6 +89,7 @@
 符号表需要额外支持：
 1. 查询某个变量的位置（成员变量？参变量？局部变量？）
 2. 查询某个变量的偏移量（第几个成员变量？参变量？局部变量？如果是成员变量，要考虑到继承的情况，从而返回正确的偏移量）
+3. 为方法重命名
 
 这里没有考虑语法树节点AllocationExpression和MessageSend。在这两个节点，符号表可能需要额外支持查询某个类的实例的size，查询某个方法的偏移量等等。
 
@@ -122,26 +123,14 @@
 生成代码需要一些额外的格式控制。
 以下列出所有需要考虑的语法树节点。
 
-#### NodeList 等序列
-把序列内每个元素的代码串起来就行。
-
 #### Goal
 把主类和其他类的代码串起来就行。
 
 #### MainClass
 在翻译PrintStatement的基础上加外壳。
 
-#### ClassDeclaration, ClassExtendsDeclaration
-把类中所有的方法的代码串起来就行。
-
 #### MethodDeclaration
 翻译语句块Statement，翻译返回值表达式Expression，然后加外壳。
-
-#### Statement
-分类讨论，不同的stmt类型不同的翻译。
-
-#### Block
-翻译语句块Statement。
 
 #### AssignmentStatement
 把右值的表达式Expression赋给左值Identifier。用`HSTORE 左值Identifier 右值Expression`或者`MOVE 左值Identifier 右值Expression`。
@@ -187,9 +176,6 @@
 对于`System.out.println(Expression)`，翻译如下：
 
     Print Expression
-
-#### Expression
-分类讨论，不同的exp类型不同的翻译。
 
 #### AndExpression
 考虑到短路机制，所以这里要采取积极的求值策略。
@@ -255,9 +241,6 @@
 #### MessageSend
 待补充。特别是在这个节点会处理传入参数超过20个的情形，如何处理上文已作介绍。
 
-#### PrimaryExpression
-分类讨论，不同的exp类型不同的翻译。
-
 #### IntegerLiteral
 数字本身即是代码。
 
@@ -297,13 +280,7 @@
     RETURN NEWTEMP 3
     END
 
-#### AllocationExpression
-待补充。
-
 #### NotExpression
 对于`!Expression`，翻译如下：
 
     MINUS 1 Expression
-
-#### BracketExpression
-翻译其中的Expression。
