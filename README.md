@@ -78,17 +78,20 @@
 
 #### 从面向对象的语言到面向过程的语言
 用VTable和DTable表示一个类的实例，然后把实例的地址也作为参数传入函数调用中。具体来说，地址放在第一个参数的位置，即`TEMP 0`。
+在ClassList中调用buildVDTable，即可在java中显式地创建出VTable和DTable。注意到此处的VTable的第一项还没有指向DTable的指针，在AllocationExpression中需要进一步组装。
+为了实现多态，具体的设计是，一个类的VTable就是其父类的VTable，再加上自己类的成员变量。一个类的DTable就是其父类的DTable，再加上自己类的方法，如果自己类的方法与父类方法有同名，就用自己类的方法覆盖掉父类的方法。偏移量容易算出。
 
 #### 数组的处理
 数组用地址来表示。长度为n的数组需要n+1个位置存储，第一个位置存放长度。
 
 #### 函数参数大于等于20个的处理
+根据Piglet Interpreter的实现，好像不需要处理。但考虑到后续寄存器分配的可能的方便，还是假设需要处理。
 设参数有n个（n>=20），那么前18个参数放在`TEMP 1`到`TEMP 18`，然后`MOVE TEMP 19 HALLOCATE TIMES 4 MINUS n 18`，然后设现在要放第k个参数（k>=19），就`HSTORE TEMP 19 TIMES 4 MINUS k 19 第k个参数的值`。在翻译时遇到参变量需要考虑其位置。
 
 #### 为符号表添加功能
 符号表需要额外支持：
 1. 查询某个变量的位置（成员变量？参变量？局部变量？）
-2. 查询某个变量的偏移量（第几个成员变量？参变量？局部变量？如果是成员变量，要考虑到继承的情况，从而返回正确的偏移量）
+2. 查询某个变量的偏移量（第几个成员变量？参变量？局部变量？）
 3. 为方法重命名
 
 这里没有考虑语法树节点AllocationExpression和MessageSend。在这两个节点，符号表可能需要额外支持查询某个类的实例的size，查询某个方法的偏移量等等。
@@ -120,7 +123,10 @@
 然后就是遍历语法树生成piglet代码了。
 
 ### 实现
-生成代码需要一些额外的格式控制。
+生成代码需要一些额外的格式控制。参见ToPigletVisitor.java下的CodeManager类。
+CodeManager类就是StringBuffer的封装，可以把它看成一个文档。在遍历语法树的时候向CodeManager中写入代码即可。
+由于写入代码是过程而不需要返回值，所以ToPigletVistor继承自GJVoidDepthFirst。
+在MessageSend时，需要得知是何种类的实例在调用方法，此时由于缺少返回值，实现起来比较麻烦。初步设想是可以在MessageSend节点new一个TraverseVisitor，用TraverseVisitor得知是何种类的实例。如果不行，也可以让ToPigletVistor继承自GJDepthFirst。
 以下列出所有需要考虑的语法树节点。
 
 #### Goal
@@ -279,6 +285,9 @@
     HSTORE NEWTEMP 3 0 NEWTEMP 1
     RETURN NEWTEMP 3
     END
+
+#### AllocationExpression
+待补充。
 
 #### NotExpression
 对于`!Expression`，翻译如下：
