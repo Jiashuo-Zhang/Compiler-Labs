@@ -30,7 +30,7 @@ public class MMethod extends MIdentifier {
 		if (!this.varTable.containsKey(v.getName())) {
 			v.isLocal = !v.isParam;
 			varTable.put(v.getName(), v);
-			System.out.println("MethodName: " + this.name + ", VarName: " + v.getName() + ", VarType: " + v.getType());
+			//System.out.println("MethodName: " + this.name + ", VarName: " + v.getName() + ", VarType: " + v.getType());
 		} else
 			throw new RedefinitionException("Variable", v.getName(), v.getRow(), v.getCol());
 	}
@@ -38,7 +38,7 @@ public class MMethod extends MIdentifier {
 	public void insertParam(MVar p) throws RedefinitionException {
 		p.isParam = true;
 		paramList.add(p);
-		System.out.print("(IsParam) ");
+		//System.out.print("(IsParam) ");
 		insertVar(p);
 	}
 

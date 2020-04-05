@@ -50,7 +50,7 @@ public class MClass extends MIdentifier {
 		if (!varTable.containsKey(v.getName())) {
 			v.isMember = true;
 			varTable.put(v.getName(), v);
-			System.out.println("ClassName: " + this.name + ", VarName: " + v.getName() + ", VarType: " + v.getType());
+			//System.out.println("ClassName: " + this.name + ", VarName: " + v.getName() + ", VarType: " + v.getType());
 		} else
 			throw new RedefinitionException("Variable", v.getName(), v.getRow(), v.getCol());
 	}
@@ -58,8 +58,7 @@ public class MClass extends MIdentifier {
 	public void insertMethod(MMethod m) throws RedefinitionException {
 		if (!methodTable.containsKey(m.getName())) {
 			methodTable.put(m.getName(), m);
-			System.out.println(
-					"ClassName: " + this.name + ", MethodName: " + m.getName() + ", ReturnType: " + m.getReturnType());
+			//System.out.println("ClassName: " + this.name + ", MethodName: " + m.getName() + ", ReturnType: " + m.getReturnType());
 		} else
 			throw new RedefinitionException("Method", m.getName(), m.getRow(), m.getCol());
 	}
