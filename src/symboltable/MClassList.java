@@ -17,7 +17,7 @@ public class MClassList extends MType {
 			throw new RedefinitionException("Class", c.getName(), c.getRow(), c.getCol());
 		else {
 			classList.put(c.getName(), c);
-			System.out.println("Class: " + c.getName());
+			//System.out.println("Class: " + c.getName());
 		}
 	}
 
