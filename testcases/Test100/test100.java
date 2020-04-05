@@ -4,25 +4,14 @@ class test100{
     }
 }
 
-class Test {
+class Test extends test100 {
     int i;
     public int start(){
-		Fun f;
-		f = new Fun();
-		
-		i = f.next(f.next(f.next(0, true), false), true);
-	
-		return i;
+		return 0;
     }
 }
 
-class Fun {
-	public int next(int i, boolean b){
-		if(b) i = i + 1;
-		else i = i;
-		return i;
-    }
-}
+class C {C C;}
 
 class B {
 	public B fun() {
@@ -31,7 +20,7 @@ class B {
 }
 
 class A extends B {
-	public A fun(){
+	public B fun(){
 		return new A();
 	}
 }

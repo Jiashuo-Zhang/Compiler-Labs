@@ -1,0 +1,29 @@
+Error in source code!
+###################### Source Code ###################### 
+class test35{
+    public static void main(String[] a){
+	System.out.println(new Test().start());
+    }
+}
+
+class Test{
+
+    Test test;
+
+    public int start(){
+
+	System.out.println(test);	// TE
+
+	return 0;
+    }
+}
+
+########### Begin to build the Symbol Table! ############ 
+Class: test35
+ClassName: test35, MethodName: main, ReturnType: void
+(IsParam) MethodName: main, VarName: a, VarType: String[]
+Class: Test
+ClassName: Test, VarName: test, VarType: Test
+ClassName: Test, MethodName: start, ReturnType: int
+################# Symbol Table is Built! ################ 
+Type Mismatched: Expected type int, but type Test passed at row 13 col 28.

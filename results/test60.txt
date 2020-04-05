@@ -1,0 +1,41 @@
+Error in source code!
+###################### Source Code ###################### 
+class test60{
+    public static void main(String[] a){
+	System.out.println(new A().start());
+    }
+}
+
+class C extends B{
+
+}
+
+class B extends A{
+
+}
+
+class A{
+
+    B b;
+    C c;
+
+    public int start(){
+
+	c = b;	// TE
+	
+	return 0;
+    }
+}
+
+########### Begin to build the Symbol Table! ############ 
+Class: test60
+ClassName: test60, MethodName: main, ReturnType: void
+(IsParam) MethodName: main, VarName: a, VarType: String[]
+Class: C
+Class: B
+Class: A
+ClassName: A, VarName: b, VarType: B
+ClassName: A, VarName: c, VarType: C
+ClassName: A, MethodName: start, ReturnType: int
+################# Symbol Table is Built! ################ 
+Type Mismatched: Expected type C, but type B passed at row 22 col 13.

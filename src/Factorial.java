@@ -1,17 +1,12 @@
-class Factorial{
-    public static void main(String[] a){
-    	int b;
-        System.out.println(new Fac().ComputeFac(10));
-    }
-}
+import java.util.HashMap;
 
-class Fac {
-    public int ComputeFac(int num){
-        int num_aux ;
-        if (num < 1)
-            num_aux = 1 ;
-        else
-            num_aux = num * (this.ComputeFac(num-1)) ;
-        return num_aux ;
+class test100 {
+    public static void main(String[] a) {
+	    HashMap<Integer, String> hm = new HashMap<Integer, String>();
+	    hm.put(1, "abc");
+	    String s = hm.get(1);
+	    System.out.println(s);
+	    s = "cd";
+	    System.out.println(hm.get(1));
     }
 }

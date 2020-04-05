@@ -1,0 +1,38 @@
+Error in source code!
+###################### Source Code ###################### 
+class test39{
+    public static void main(String[] a){
+	System.out.println(new Test().start());
+    }
+}
+
+class Test{
+
+    Test test;
+
+    public int start(){
+
+	while(test.next()) System.out.println(1);	// TE
+
+	return 0;
+    }
+
+    public Test next(){
+
+	while (true) System.out.println(1);
+
+	return test;
+
+    }
+}
+
+########### Begin to build the Symbol Table! ############ 
+Class: test39
+ClassName: test39, MethodName: main, ReturnType: void
+(IsParam) MethodName: main, VarName: a, VarType: String[]
+Class: Test
+ClassName: Test, VarName: test, VarType: Test
+ClassName: Test, MethodName: start, ReturnType: int
+ClassName: Test, MethodName: next, ReturnType: Test
+################# Symbol Table is Built! ################ 
+Type Mismatched: Expected type boolean, but type Test passed at row 13 col 15.

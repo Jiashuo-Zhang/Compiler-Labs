@@ -14,6 +14,8 @@ public class MClass extends MIdentifier {
 	protected String parentClassName;
 	private HashMap<String, MMethod> methodTable = new HashMap<String, MMethod>();
 	private HashMap<String, MVar> varTable = new HashMap<String, MVar>();
+	public ArrayList<MVar> VTable = null;
+	public ArrayList<MMethod> DTable = null;
 
 	public MClass() {
 
@@ -46,6 +48,7 @@ public class MClass extends MIdentifier {
 
 	public void insertVar(MVar v) throws RedefinitionException {
 		if (!varTable.containsKey(v.getName())) {
+			v.isMember = true;
 			varTable.put(v.getName(), v);
 			//System.out.println("ClassName: " + this.name + ", VarName: " + v.getName() + ", VarType: " + v.getType());
 		} else
@@ -147,5 +150,48 @@ public class MClass extends MIdentifier {
 					throw new OverloadException(name, this.getName(), fa.getName(), method.getRow(), method.getCol());
 			}
 		}
+	}
+
+	public void buildVDTable() {
+		if (VTable == null && DTable == null) {
+			HashMap<String, MMethod> newMethodTable = new HashMap<String, MMethod>();
+			HashMap<String, MVar> newVarTable = new HashMap<String, MVar>();
+			if (parentClass != null) {
+				parentClass.buildVDTable();
+				VTable = parentClass.VTable;
+				DTable = parentClass.DTable;
+			} else {
+				VTable = new ArrayList<MVar>();
+				DTable = new ArrayList<MMethod>();
+			}
+			for (String key : varTable.keySet()) {
+				MVar var = varTable.get(key);
+				var.offset = 4 + 4 * VTable.size();
+				newVarTable.put(var.getName(), var);
+				VTable.add(var);
+			}
+			for (String key : methodTable.keySet()) {
+				MMethod method = methodTable.get(key);
+				String name = method.getName();
+				for (int i = 0; i < DTable.size(); ++i) {
+					if (name.equals(DTable.get(i).getName())) {
+						DTable.set(i, method);
+					}
+				}
+				method.offset = 4 * DTable.size();
+				newMethodTable.put(name, method);
+				DTable.add(method);
+			}
+			varTable = newVarTable;
+			methodTable = newMethodTable;
+		}
+	}
+
+	public int alloc(int p) {
+		for (String key : methodTable.keySet()) {
+			MMethod method = methodTable.get(key);
+			p = method.alloc(p);
+		}
+		return p;
 	}
 }

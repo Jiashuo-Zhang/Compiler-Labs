@@ -1,0 +1,42 @@
+No error in source code!
+###################### Source Code ###################### 
+class test77{
+    public static void main(String[] a){
+	System.out.println(new Test().start());
+    }
+}
+
+class Test {
+
+    Test test;
+    boolean b;
+    public int start(){
+    int b;
+	b = test.next();
+	
+	return 0;
+    }
+
+    public boolean next(){
+	
+	boolean b2;
+
+	b2 = ((true && (7<8)) && !b);
+	return b2; 
+    }
+
+}
+
+########### Begin to build the Symbol Table! ############ 
+Class: test77
+ClassName: test77, MethodName: main, ReturnType: void
+(IsParam) MethodName: main, VarName: a, VarType: String[]
+Class: Test
+ClassName: Test, VarName: test, VarType: Test
+ClassName: Test, VarName: b, VarType: boolean
+ClassName: Test, MethodName: start, ReturnType: int
+MethodName: start, VarName: b, VarType: int
+ClassName: Test, MethodName: next, ReturnType: boolean
+MethodName: next, VarName: b2, VarType: boolean
+################# Symbol Table is Built! ################ 
+Type Mismatched: Expected type int, but type boolean passed at row 13 col 13.
