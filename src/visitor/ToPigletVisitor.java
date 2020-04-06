@@ -518,18 +518,21 @@ public class ToPigletVisitor extends GJVoidDepthFirst<MType> {
 	   {
 		   document.write("CALL ");
 		   document.writeBegin();
-		   ToPigletVisitor newvisitor = new ToPigletVisitor();///////use 2 new vistor
-		   newvisitor.document.currentTemp=document.currentTemp;
-		   //n.f0.accept(this,argu);
-		   n.f0.accept(newvisitor,argu);
-		   document.currentTemp=newvisitor.document.currentTemp;
-		   
-		   MClass callerclass=(MClass) n.f0.accept(new TraverseVisitor(),argu);///get class type
-		
-		   MMethod method=callerclass.getMethod(n.f2.f0.toString());
 		   String temp1=document.getNewTemp(), temp2=document.getNewTemp(),temp3=document.getNewTemp();
-		   document.write("MOVE "+ temp1+" "+newvisitor.document.sb);
+		   document.write("MOVE "+ temp1+" ");
+		   n.f0.accept(this,argu);
 		   document.newline();
+		 //  ToPigletVisitor newvisitor = new ToPigletVisitor();///////use 2 new vistor
+		  // newvisitor.document.currentTemp=document.currentTemp;
+		   //n.f0.accept(this,argu);
+		  // n.f0.accept(newvisitor,argu);
+		  // document.currentTemp=newvisitor.document.currentTemp;
+		   TraverseVisitor tv = new TraverseVisitor();
+		   tv.allClassList=this.allClassList;
+		   MType m=(MType) n.f0.accept(tv,argu);///get class type
+		   MClass callerclass=allClassList.getClass(m.getType());
+		   MMethod method=callerclass.getMethod(n.f2.f0.toString());
+		   
 		   document.write("HLOAD "+temp2+" "+temp1+" 0");
 		   document.newline();
 		   document.write("HLOAD "+temp3+" "+temp2+" "+method.offset);
@@ -539,7 +542,7 @@ public class ToPigletVisitor extends GJVoidDepthFirst<MType> {
 		   document.writeEnd();
 		   //params
 		   document.write(" ("+ temp1+' ');
-		   if(method.getParamNum()<=20)
+		   if(method.getParamNum()<=19)
 		   {
 			   n.f4.accept(this,argu);
 			   document.write(" )");////是否需要换行？
@@ -550,6 +553,7 @@ public class ToPigletVisitor extends GJVoidDepthFirst<MType> {
 			   paramsvisitor.document.currentTemp=this.document.currentTemp;
 			   paramsvisitor.document.currentTab=this.document.currentTab;
 			   paramsvisitor.document.currentLabel=this.document.currentLabel;
+			   paramsvisitor.allClassList=this.allClassList;
 			   //n.f4.accept(paramsvistor,argu,method.getParamNum());
 			  // if ( n.f4.present() )
 			   paramsvisitor.isparamVistor=true;
@@ -561,8 +565,8 @@ public class ToPigletVisitor extends GJVoidDepthFirst<MType> {
 			   this.document.currentTab=paramsvisitor.document.currentTab;
 			   this.document.write(paramsvisitor.document.sb);
 			   this.document.write(" )");
-			
 		   }
+		   
 		   
 		   
 		   return;
@@ -578,25 +582,27 @@ public class ToPigletVisitor extends GJVoidDepthFirst<MType> {
 	   {
 		   if(this.isparamVistor) 
 		   {
-			   n.f0.accept(this,argu);
 			   int cnt=1;
+			   n.f0.accept(this,argu);
+			   cnt++;
+			   
 			   String temp19=null;
 			   if(n.f1.present()==true)
 			   {
 				         for ( Enumeration<Node> e = n.f1.elements(); e.hasMoreElements(); ) {
-				        	 if(cnt<=19)
+				        	 if(cnt<=18)
 				        	 {
 				        		 e.nextElement().accept(this,argu);
 				        	 }
-				        	 else if(cnt==20)
+				        	 else if(cnt==19)
 				        	 {
-				        		 ToPigletVisitor OneParamVisitor = new ToPigletVisitor();
-				        		 OneParamVisitor.document.currentTemp=this.document.currentTemp;
+				        		// ToPigletVisitor OneParamVisitor = new ToPigletVisitor();
+				        		 //OneParamVisitor.document.currentTemp=this.document.currentTemp;
 				        		 //e.nextElement().accept(this,argu);
-				        		 this.document.currentTemp=OneParamVisitor.document.currentTemp;
+				        		// this.document.currentTemp=OneParamVisitor.document.currentTemp;
 				        		 temp19=this.document.getNewTemp();
 				        		 document.writeBegin();
-				        		 document.write("MOVE "+temp19+" "+" HALLOCATE" + 4*(this.paramNumber-19));
+				        		 document.write("MOVE "+temp19+" "+" HALLOCATE" + 4*(this.paramNumber-18));
 				        		 document.newline();
 				        	 }
 				        	 else
@@ -605,18 +611,21 @@ public class ToPigletVisitor extends GJVoidDepthFirst<MType> {
 				        		 OneParamVisitor.document.currentTemp=this.document.currentTemp;
 				        		 OneParamVisitor.document.currentLabel=this.document.currentLabel;
 				        		 OneParamVisitor.document.currentTab=this.document.currentTab;
+				        		 OneParamVisitor.allClassList=this.allClassList;
 				        		 e.nextElement().accept(OneParamVisitor,argu);
 				        		 this.document.currentTemp=OneParamVisitor.document.currentTemp;
 				        		 this.document.currentTab=OneParamVisitor.document.currentTab;
 				        		 this.document.currentLabel=OneParamVisitor.document.currentLabel;
 				        		 document.write("HSTORE "+ temp19+ ' '+4*(cnt-20)+' '+OneParamVisitor.document.sb);
-				       
 				        	 }
 				        	 cnt++;
+				        	 
 				           
 				         }
-				         document.writeEnd();
+				      
 				         document.write("Return "+ temp19);
+				         document.newline();
+				         document.writeEnd();
 				        // document.newline();
 				 
 				   }
