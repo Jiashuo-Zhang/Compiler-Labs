@@ -11,7 +11,7 @@ public class MMethod extends MIdentifier {
 	protected ArrayList<MVar> paramList = new ArrayList<MVar>();
 	protected HashMap<String, MVar> varTable = new HashMap<String, MVar>();
 	
-	int offset = 0;
+	public int offset = 0;
 
 	public MMethod(String _returnType, MIdentifier parent, String name, int row, int col) {
 		super(parent, name, "method", row, col);
