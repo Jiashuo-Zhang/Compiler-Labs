@@ -1,6 +1,7 @@
 package symboltable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -14,9 +15,8 @@ public class MClass extends MIdentifier {
 	protected String parentClassName;
 	private HashMap<String, MMethod> methodTable = new HashMap<String, MMethod>();
 	private HashMap<String, MVar> varTable = new HashMap<String, MVar>();
-	public ArrayList<MVar> VTable = null;
-	public ArrayList<MMethod> DTable = null;
-
+	private ArrayList<MVar> VTable=new ArrayList<MVar>();
+	private ArrayList<MMethod> DTable=new ArrayList<MMethod>();
 	public MClass() {
 
 	}
@@ -29,7 +29,20 @@ public class MClass extends MIdentifier {
 		super(name, "class", row, col);
 		parentClass = parent;
 	}
-
+	public Collection<MMethod> getAllMethods() {
+		return methodTable.values();
+	}
+	public Collection<MVar> getAllVars() {
+		return varTable.values();
+	}
+	public int getMethodNumber()
+	{
+		return DTable.size();
+	}
+	public int getVarNumber()
+	{
+		return VTable.size();
+	}
 	public String getParentClassName() {
 		return parentClassName;
 	}

@@ -1,10 +1,16 @@
 package visitor;
 
+import java.util.ArrayList;
+import java.util.Enumeration;
+
+import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
+
 import symboltable.MClass;
 import symboltable.MClassList;
 import symboltable.MMethod;
 import symboltable.MType;
 import symboltable.MVar;
+import syntaxtree.AllocationExpression;
 import syntaxtree.AndExpression;
 import syntaxtree.ArrayAllocationExpression;
 import syntaxtree.ArrayAssignmentStatement;
@@ -14,14 +20,21 @@ import syntaxtree.AssignmentStatement;
 import syntaxtree.ClassDeclaration;
 import syntaxtree.ClassExtendsDeclaration;
 import syntaxtree.CompareExpression;
+import syntaxtree.Expression;
+import syntaxtree.ExpressionList;
+import syntaxtree.ExpressionRest;
 import syntaxtree.FalseLiteral;
 import syntaxtree.Goal;
 import syntaxtree.Identifier;
 import syntaxtree.IfStatement;
 import syntaxtree.IntegerLiteral;
 import syntaxtree.MainClass;
+import syntaxtree.MessageSend;
 import syntaxtree.MethodDeclaration;
 import syntaxtree.MinusExpression;
+import syntaxtree.Node;
+import syntaxtree.NodeListOptional;
+import syntaxtree.NodeOptional;
 import syntaxtree.NotExpression;
 import syntaxtree.PlusExpression;
 import syntaxtree.PrintStatement;
@@ -31,11 +44,14 @@ import syntaxtree.TrueLiteral;
 import syntaxtree.WhileStatement;
 
 public class ToPigletVisitor extends GJVoidDepthFirst<MType> {
-
+	
 	MClassList allClassList = null;
 
 	CodeManager document = null;
-
+	
+	boolean isparamVistor=false;
+	int paramNumber=0;
+	
 	public ToPigletVisitor() {
 		document = new CodeManager();
 	}
@@ -454,6 +470,199 @@ public class ToPigletVisitor extends GJVoidDepthFirst<MType> {
 		document.write("MINUS 1");
 		n.f1.accept(this, argu);
 	}
+	
+	 /**
+	 * f0 -> "new"
+	 * f1 -> Identifier()
+	 * f2 -> "("
+	 * f3 -> ")"
+	 */
+	public void visit(AllocationExpression n, MType argu)
+	{
+		MClass newclass=allClassList.getClass(n.f1.f0.toString());
+		String temp1=document.getNewTemp();
+		String temp2=document.getNewTemp();
+		document.writeBegin();
+		
+		document.write("MOVE "+temp1+" HALLOCATE "+4*newclass.getMethodNumber());
+		document.newline();
+		for( MMethod method: newclass.getAllMethods())
+		{
+			document.write("HSTORE "+temp1+" "+method.offset+' '+ method.getPigletName());
+			document.newline();
+		}
+		document.write("MOVE "+temp2+" "+4*newclass.getVarNumber()+4);
+		document.newline();
+		for (MVar var:newclass.getAllVars())
+		{
+			document.write("HSTORE "+temp2+" "+var.getOffset()+ " 0");///initialize
+			document.newline();
+		}
+		document.write("HSTORE "+ temp2+" 0 "+temp1);
+		document.newline();
+		document.write("RETURN "+temp2);
+		document.newline();
+		
+		document.writeEnd();
+		return;
+	}
+	   /**
+	    * f0 -> PrimaryExpression()
+	    * f1 -> "."
+	    * f2 -> Identifier()
+	    * f3 -> "("
+	    * f4 -> ( ExpressionList() )?
+	    * f5 -> ")"
+	    */
+	   public void visit(MessageSend n, MType argu)
+	   {
+		   document.write("CALL ");
+		   document.writeBegin();
+		   String temp1=document.getNewTemp(), temp2=document.getNewTemp(),temp3=document.getNewTemp();
+		   document.write("MOVE "+ temp1+" ");
+		   n.f0.accept(this,argu);
+		   document.newline();
+		 //  ToPigletVisitor newvisitor = new ToPigletVisitor();///////use 2 new vistor
+		  // newvisitor.document.currentTemp=document.currentTemp;
+		   //n.f0.accept(this,argu);
+		  // n.f0.accept(newvisitor,argu);
+		  // document.currentTemp=newvisitor.document.currentTemp;
+		   TraverseVisitor tv = new TraverseVisitor();
+		   tv.allClassList=this.allClassList;
+		   MType m=(MType) n.f0.accept(tv,argu);///get class type
+		   MClass callerclass=allClassList.getClass(m.getType());
+		   MMethod method=callerclass.getMethod(n.f2.f0.toString());
+		   
+		   document.write("HLOAD "+temp2+" "+temp1+" 0");
+		   document.newline();
+		   document.write("HLOAD "+temp3+" "+temp2+" "+method.offset);
+		   document.newline();
+		   document.write("RETURN "+temp3);////temp3 is the address of the method 
+		   document.newline();
+		   document.writeEnd();
+		   //params
+		   document.write(" ("+ temp1+' ');
+		   if(method.getParamNum()<=19)
+		   {
+			   n.f4.accept(this,argu);
+			   document.write(" )");////是否需要换行？
+		   }
+		   else
+		   {
+			   ToPigletVisitor paramsvisitor = new ToPigletVisitor();
+			   paramsvisitor.document.currentTemp=this.document.currentTemp;
+			   paramsvisitor.document.currentTab=this.document.currentTab;
+			   paramsvisitor.document.currentLabel=this.document.currentLabel;
+			   paramsvisitor.allClassList=this.allClassList;
+			   //n.f4.accept(paramsvistor,argu,method.getParamNum());
+			  // if ( n.f4.present() )
+			   paramsvisitor.isparamVistor=true;
+			   paramsvisitor.paramNumber=method.getParamNum();
+			   n.f4.accept(paramsvisitor,argu);
+			    //     n.f4.node.accept(paramsvisitor,argu,method.getParamNum());
+			   this.document.currentTemp=paramsvisitor.document.currentTemp;
+			   this.document.currentLabel=paramsvisitor.document.currentLabel;
+			   this.document.currentTab=paramsvisitor.document.currentTab;
+			   this.document.write(paramsvisitor.document.sb);
+			   this.document.write(" )");
+		   }
+		   
+		   
+		   
+		   return;
+	   }
+	  
+
+	   
+	   /**
+	    * f0 -> Expression()
+	    * f1 -> ( ExpressionRest() )*
+	    */
+	   public void visit(ExpressionList n, MType argu)
+	   {
+		   if(this.isparamVistor) 
+		   {
+			   int cnt=1;
+			   n.f0.accept(this,argu);
+			   cnt++;
+			   
+			   String temp19=null;
+			   if(n.f1.present()==true)
+			   {
+				         for ( Enumeration<Node> e = n.f1.elements(); e.hasMoreElements(); ) {
+				        	 if(cnt<=18)
+				        	 {
+				        		 e.nextElement().accept(this,argu);
+				        	 }
+				        	 else if(cnt==19)
+				        	 {
+				        		// ToPigletVisitor OneParamVisitor = new ToPigletVisitor();
+				        		 //OneParamVisitor.document.currentTemp=this.document.currentTemp;
+				        		 //e.nextElement().accept(this,argu);
+				        		// this.document.currentTemp=OneParamVisitor.document.currentTemp;
+				        		 temp19=this.document.getNewTemp();
+				        		 document.writeBegin();
+				        		 document.write("MOVE "+temp19+" "+" HALLOCATE" + 4*(this.paramNumber-18));
+				        		 document.newline();
+				        	 }
+				        	 else
+				        	 {
+				        		 ToPigletVisitor OneParamVisitor = new ToPigletVisitor();
+				        		 OneParamVisitor.document.currentTemp=this.document.currentTemp;
+				        		 OneParamVisitor.document.currentLabel=this.document.currentLabel;
+				        		 OneParamVisitor.document.currentTab=this.document.currentTab;
+				        		 OneParamVisitor.allClassList=this.allClassList;
+				        		 e.nextElement().accept(OneParamVisitor,argu);
+				        		 this.document.currentTemp=OneParamVisitor.document.currentTemp;
+				        		 this.document.currentTab=OneParamVisitor.document.currentTab;
+				        		 this.document.currentLabel=OneParamVisitor.document.currentLabel;
+				        		 document.write("HSTORE "+ temp19+ ' '+4*(cnt-20)+' '+OneParamVisitor.document.sb);
+				        	 }
+				        	 cnt++;
+				        	 
+				           
+				         }
+				      
+				         document.write("Return "+ temp19);
+				         document.newline();
+				         document.writeEnd();
+				        // document.newline();
+				 
+				   }
+				   else System.out.println("ERROR! The number of param is Wrong");
+		   }
+		   else
+		   {
+			   n.f0.accept(this,argu);
+			   n.f1.accept(this,argu);
+		   }
+	   }
+	   /**
+	    * f0 -> ","
+	    * f1 -> Expression()
+	    */
+	   public void visit(ExpressionRest n, MType argu,int param) {
+	      n.f1.accept(this, argu);
+	   }
+	   /**
+	    * f0 -> AndExpression()
+	    *       | CompareExpression()
+	    *       | PlusExpression()
+	    *       | MinusExpression()
+	    *       | TimesExpression()
+	    *       | ArrayLookup()
+	    *       | ArrayLength()
+	    *       | MessageSend()
+	    *       | PrimaryExpression()
+	    */
+	   public void visit(Expression n, MType argu)
+	   {
+		   n.f0.accept(this,argu);
+	   }
+
+	
+	
+	
 }
 
 class CodeManager {
@@ -461,7 +670,9 @@ class CodeManager {
 	StringBuffer sb;
 	int currentTemp, currentTab, currentLabel;
 	boolean flag;
-
+	//ArrayList<String> paramcache=new ArrayList<String>();
+	//boolean breakpoint=false;
+	
 	public CodeManager() {
 		sb = new StringBuffer();
 		currentTemp = 0;
@@ -493,6 +704,9 @@ class CodeManager {
 			sb.append(" ");
 			sb.append(ar[i].toString());
 		}
+		
+		
+		
 	}
 
 	public void writeLabel(String lbl) {
