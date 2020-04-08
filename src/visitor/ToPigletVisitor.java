@@ -491,7 +491,7 @@ public class ToPigletVisitor extends GJVoidDepthFirst<MType> {
 			document.write("HSTORE "+temp1+" "+method.offset+' '+ method.getPigletName());
 			document.newline();
 		}
-		document.write("MOVE "+temp2+" "+4*newclass.getVarNumber()+4);
+		document.write("MOVE "+temp2+" HALLOCATE "+4*newclass.getVarNumber()+4);
 		document.newline();
 		for (MVar var:newclass.getAllVars())
 		{
