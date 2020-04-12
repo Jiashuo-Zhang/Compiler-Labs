@@ -1,3 +1,4 @@
+package Minijava;
 import java.io.*;
 import visitor.*;
 import syntaxtree.*;
@@ -42,11 +43,11 @@ public class Main {
 	}
 
 	public static String fileRead(File file) throws IOException {
-		BufferedReader br = new BufferedReader(new FileReader(file));// newÒ»¸öBufferedReader¶ÔÏó£¬½«ÎÄ¼þÄÚÈÝ¶ÁÈ¡µ½»º´æ
-		StringBuilder sb = new StringBuilder();// ¶¨ÒåÒ»¸ö×Ö·û´®»º´æ£¬½«×Ö·û´®´æ·Å»º´æÖÐ
+		BufferedReader br = new BufferedReader(new FileReader(file));// newÒ»ï¿½ï¿½BufferedReaderï¿½ï¿½ï¿½ó£¬½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½Ý¶ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		StringBuilder sb = new StringBuilder();// ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½æ£¬ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½Å»ï¿½ï¿½ï¿½ï¿½ï¿½
 		String s = null;
-		while ((s = br.readLine()) != null) {// ÖðÐÐ¶ÁÈ¡ÎÄ¼þÄÚÈÝ£¬²»¶ÁÈ¡»»ÐÐ·ûºÍÄ©Î²µÄ¿Õ¸ñ
-			sb.append(s + "\n");// ½«¶ÁÈ¡µÄ×Ö·û´®Ìí¼Ó»»ÐÐ·ûºóÀÛ¼Ó´æ·ÅÔÚ»º´æÖÐ
+		while ((s = br.readLine()) != null) {// ï¿½ï¿½ï¿½Ð¶ï¿½È¡ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½Ý£ï¿½ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½ï¿½Ð·ï¿½ï¿½ï¿½Ä©Î²ï¿½Ä¿Õ¸ï¿½
+			sb.append(s + "\n");// ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½Ó»ï¿½ï¿½Ð·ï¿½ï¿½ï¿½ï¿½Û¼Ó´ï¿½ï¿½ï¿½Ú»ï¿½ï¿½ï¿½ï¿½ï¿½
 		}
 		br.close();
 		return sb.toString();

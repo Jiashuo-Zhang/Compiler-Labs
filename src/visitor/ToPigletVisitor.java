@@ -51,6 +51,24 @@ public class ToPigletVisitor extends GJVoidDepthFirst<MType> {
 	
 	boolean isparamVistor=false;
 	int paramNumber=0;
+	public void setAllClassList(MClassList c)
+	{
+		this.allClassList=c;
+		return;
+	}
+	public void setisParam(boolean c)
+	{
+		this.isparamVistor=c;
+		return;
+	}
+	public void setDocumentCurrentTemp(int p)
+	{
+		document.currentTemp=p;
+	}
+	public String GetPigletCode()
+	{
+		return document.sb.toString();
+	}
 	
 	public ToPigletVisitor() {
 		document = new CodeManager();
