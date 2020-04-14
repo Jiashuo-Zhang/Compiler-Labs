@@ -10,8 +10,10 @@ public class MMethod extends MIdentifier {
 	protected String returnType = null;
 	protected ArrayList<MVar> paramList = new ArrayList<MVar>();
 	protected HashMap<String, MVar> varTable = new HashMap<String, MVar>();
-	
+
 	public int offset = 0;
+	
+	private int paramNum = 0;
 
 	public MMethod(String _returnType, MIdentifier parent, String name, int row, int col) {
 		super(parent, name, "method", row, col);
@@ -30,20 +32,22 @@ public class MMethod extends MIdentifier {
 		if (!this.varTable.containsKey(v.getName())) {
 			v.isLocal = !v.isParam;
 			varTable.put(v.getName(), v);
-			//System.out.println("MethodName: " + this.name + ", VarName: " + v.getName() + ", VarType: " + v.getType());
+			// System.out.println("MethodName: " + this.name + ", VarName: " + v.getName() +
+			// ", VarType: " + v.getType());
 		} else
 			throw new RedefinitionException("Variable", v.getName(), v.getRow(), v.getCol());
 	}
 
 	public void insertParam(MVar p) throws RedefinitionException {
 		p.isParam = true;
+		p.offset = ++paramNum;
 		paramList.add(p);
-		//System.out.print("(IsParam) ");
+		// System.out.print("(IsParam) ");
 		insertVar(p);
 	}
 
 	public int getParamNum() {
-		return paramList.size();
+		return paramNum;
 	}
 
 	public ArrayList<MVar> getParamList() {
@@ -80,17 +84,17 @@ public class MMethod extends MIdentifier {
 	}
 
 	public String getPigletDefineName() {
-		return getPigletName() + " [ " + (paramList.size() + 1) + " ]";
+		int size = paramList.size() + 1;
+		if (size > 20)
+			size = 20;
+		return getPigletName() + " [ " + size + " ]";
 	}
 
 	public int alloc(int p) {
-		int s = 0;
 		HashMap<String, MVar> newVarTable = new HashMap<String, MVar>();
 		for (String key : varTable.keySet()) {
 			MVar var = varTable.get(key);
-			if (var.isParam)
-				var.offset = ++s;
-			else
+			if (var.isLocal)
 				var.offset = p++;
 			newVarTable.put(var.getName(), var);
 		}

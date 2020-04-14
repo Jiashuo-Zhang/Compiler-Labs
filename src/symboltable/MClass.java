@@ -15,8 +15,8 @@ public class MClass extends MIdentifier {
 	protected String parentClassName;
 	private HashMap<String, MMethod> methodTable = new HashMap<String, MMethod>();
 	private HashMap<String, MVar> varTable = new HashMap<String, MVar>();
-	private ArrayList<MVar> VTable=new ArrayList<MVar>();
-	private ArrayList<MMethod> DTable=new ArrayList<MMethod>();
+	private ArrayList<MVar> VTable=null;
+	private ArrayList<MMethod> DTable=null;
 	public MClass() {
 
 	}
@@ -29,11 +29,11 @@ public class MClass extends MIdentifier {
 		super(name, "class", row, col);
 		parentClass = parent;
 	}
-	public Collection<MMethod> getAllMethods() {
-		return methodTable.values();
+	public ArrayList<MMethod> getAllMethods() {
+		return DTable;
 	}
-	public Collection<MVar> getAllVars() {
-		return varTable.values();
+	public ArrayList<MVar> getAllVars() {
+		return VTable;
 	}
 	public int getMethodNumber()
 	{
