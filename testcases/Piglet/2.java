@@ -8,6 +8,6 @@ class Start{
 	public int start()
 	{
 		//a=1;//TE
-		return 0;
+		return 1;
 	}
 }

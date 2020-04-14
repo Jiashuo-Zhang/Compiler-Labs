@@ -255,7 +255,19 @@ CodeManager类就是StringBuffer的封装，可以把它看成一个文档。在
 	END
 
 #### MessageSend
-待补充。特别是在这个节点会处理传入参数超过20个的情形，如何处理上文已作介绍。
+
+对于message send，翻译如下：(省略了Param的获取以及对于20个以上Params的处理)
+
+```
+CALL
+BEGIN
+MOVE NEWTEMP 1 IDENTIFIER
+HLOAD NEWTEMP 2 NEWTEMP 1 0
+HLOAD NEWTEMP 3 NEWTEMP 2 Method.offset
+RETURN NEWTEMP 3
+END
+(NEWTEMP 1 [.PARAMS])
+```
 
 #### IntegerLiteral
 数字本身即是代码。
@@ -298,7 +310,22 @@ CodeManager类就是StringBuffer的封装，可以把它看成一个文档。在
     END
 
 #### AllocationExpression
-待补充。
+对于new identifier( ), 翻译如下：
+
+```
+BEGIN
+MOVE NEWTEMP 1 HALLOCATE 4*ClassMethodNumber
+for each method:
+	HSTORE NEWTEMP 1 Method.offset Method.PigletName
+MOVE NEWTEMP 2 HALLOCATE 4*ClassVarNumber+4
+for each var:
+	HSTORE NEWTEMP 2 var.offset 0
+HSTORE NEWTEMP 2 0 NEWTEMP 1
+RETURN NEWTEMP 2
+END
+```
+
+
 
 #### NotExpression
 对于`!Expression`，翻译如下：

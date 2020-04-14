@@ -51,6 +51,24 @@ public class ToPigletVisitor extends GJVoidDepthFirst<MType> {
 	
 	boolean isparamVistor=false;
 	int paramNumber=0;
+	public void setAllClassList(MClassList c)
+	{
+		this.allClassList=c;
+		return;
+	}
+	public void setisParam(boolean c)
+	{
+		this.isparamVistor=c;
+		return;
+	}
+	public void setDocumentCurrentTemp(int p)
+	{
+		document.currentTemp=p;
+	}
+	public String GetPigletCode()
+	{
+		return document.sb.toString();
+	}
 	
 	public ToPigletVisitor() {
 		document = new CodeManager();
@@ -491,7 +509,7 @@ public class ToPigletVisitor extends GJVoidDepthFirst<MType> {
 			document.write("HSTORE "+temp1+" "+method.offset+' '+ method.getPigletName());
 			document.newline();
 		}
-		document.write("MOVE "+temp2+" "+4*newclass.getVarNumber()+4);
+		document.write("MOVE "+temp2+" HALLOCATE "+4*newclass.getVarNumber()+4);
 		document.newline();
 		for (MVar var:newclass.getAllVars())
 		{

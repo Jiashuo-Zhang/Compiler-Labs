@@ -1,3 +1,4 @@
+package Minijava;
 import java.util.HashMap;
 
 class test100 {
