@@ -60,6 +60,7 @@ public class Piglet2SpigletVisitor extends DepthFirstVisitor
   //  n.f0.accept(this);
 	document.write(n.f0.f0.tokenImage+"["+n.f2.f0.tokenImage+"]");
     n.f4.accept(this);
+    document.newline();
  }
 
  /**
@@ -107,7 +108,7 @@ public class Piglet2SpigletVisitor extends DepthFirstVisitor
     n.f1.accept(this);
     document.write("CJUMP ",this.document.lastTemp," ",n.f2.f0.tokenImage);
    /// n.f2.accept(this);
-   // this.document.newline();
+    this.document.newline();
  }
 
  /**
@@ -133,9 +134,11 @@ public class Piglet2SpigletVisitor extends DepthFirstVisitor
    // n.f0.accept(this);
     n.f1.accept(this);
     String tmp1=this.document.lastTemp;
+    document.newline();
    // n.f2.accept(this);
     n.f3.accept(this);
     String tmp2=this.document.lastTemp;
+    document.newline();
     this.document.write("HSTORE ",tmp1," ",n.f2.f0.tokenImage," ",tmp2);
     this.document.newline();
  }
@@ -149,6 +152,7 @@ public class Piglet2SpigletVisitor extends DepthFirstVisitor
  public void visit(HLoadStmt n) {
 	n.f2.accept(this);
 	String tmp=this.document.lastTemp;
+	document.newline();
    // n.f0.accept(this);
 	this.document.write("HLOAD ",tmp," ",n.f3.f0.tokenImage);
     //n.f1.accept(this);
@@ -164,8 +168,9 @@ public class Piglet2SpigletVisitor extends DepthFirstVisitor
  public void visit(MoveStmt n) {
 	n.f2.accept(this);
 	String tmp=this.document.lastTemp;
+	document.newline();
 	document.write("MOVE ");
-    n.f0.accept(this);
+    n.f1.accept(this);
     this.document.write(" ", tmp);
     this.document.newline();
     
@@ -181,6 +186,7 @@ public class Piglet2SpigletVisitor extends DepthFirstVisitor
   //  n.f0.accept(this);
     n.f1.accept(this);
     String tmp=document.lastTemp;
+    document.newline();
     document.write("PRINT ",tmp);
     this.document.newline();
  }
@@ -236,10 +242,13 @@ public class Piglet2SpigletVisitor extends DepthFirstVisitor
  public void visit(Call n) {
   //  n.f0.accept(this);
     n.f1.accept(this);
-    this.document.write("CALL ",this.document.lastTemp," ","(");
+    String tmp1=this.document.lastTemp;
+    this.document.newline();
     this.document.ClearTempList();
-  //  n.f2.accept(this);
     n.f3.accept(this);
+    this.document.newline();
+    this.document.write("CALL ",tmp1," ","(");
+  //  n.f2.accept(this)
     for (String temp: this.document.tempList)
     {
     	document.write(temp,' ');
