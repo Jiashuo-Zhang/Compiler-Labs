@@ -3,7 +3,7 @@ package visitor;
 import syntaxtree.*;
 
 public class TempNumberVisitor extends DepthFirstVisitor {
-	private int num = 0;
+	private int num = 19;
 
 	public int getNumber() {
 		return num;
