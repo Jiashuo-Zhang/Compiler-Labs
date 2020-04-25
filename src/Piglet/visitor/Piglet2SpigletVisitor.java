@@ -51,9 +51,16 @@ public class Piglet2SpigletVisitor extends GJNoArguDepthFirst<String> {
 	public String visit(Procedure n) {
 		// n.f0.accept(this);
 		document.write(n.f0.f0.tokenImage, "[", n.f2.f0.tokenImage, "]");
+		document.writeBegin();
 		document.newline();
-		n.f4.accept(this);
+		String tmp1=n.f4.accept(this);
 		document.newline();
+		document.write("RETURN",tmp1);
+		this.document.newline();
+		document.writeEnd();
+		this.document.newline();
+		
+		
 		return null;
 	}
 
@@ -123,12 +130,13 @@ public class Piglet2SpigletVisitor extends GJNoArguDepthFirst<String> {
 	 * f0 -> "HLOAD" f1 -> Temp() f2 -> Exp() f3 -> IntegerLiteral()
 	 */
 	public String visit(HLoadStmt n) {
-		String tmp1 = n.f2.accept(this);
+		String tmp1=n.f1.accept(this);
+		document.newline();
+		String tmp2 = n.f2.accept(this);
 		document.newline();
 
 		this.document.write("HLOAD");
-		n.f1.accept(this);
-		this.document.write(tmp1, n.f3.f0.tokenImage);
+		this.document.write(tmp1,tmp2, n.f3.f0.tokenImage);
 		document.newline();
 		return null;
 	}
@@ -137,13 +145,13 @@ public class Piglet2SpigletVisitor extends GJNoArguDepthFirst<String> {
 	 * f0 -> "MOVE" f1 -> Temp() f2 -> Exp()
 	 */
 	public String visit(MoveStmt n) {
-		String tmp1 = n.f2.accept(this);
+		String tmp1 = n.f1.accept(this);
 		document.newline();
-
-		this.document.write("MOVE");
-		n.f1.accept(this);
-		this.document.write(tmp1);
+		String tmp2=n.f2.accept(this);
 		this.document.newline();
+		this.document.write("MOVE",tmp1,tmp2);
+		this.document.newline();
+		
 		return null;
 	}
 
@@ -171,13 +179,13 @@ public class Piglet2SpigletVisitor extends GJNoArguDepthFirst<String> {
 	 * f0 -> "BEGIN" f1 -> StmtList() f2 -> "RETURN" f3 -> Exp() f4 -> "END"
 	 */
 	public String visit(StmtExp n) {
-		this.document.writeBegin();
+		//this.document.writeBegin();
 		n.f1.accept(this);
 		String tmp1 = n.f3.accept(this);
-		this.document.newline();
+		//this.document.newline();
 
-		document.write("RETURN", tmp1);
-		document.writeEnd();
+		//document.write("RETURN", tmp1);
+		//document.writeEnd();
 		return tmp1;
 	}
 
@@ -246,7 +254,9 @@ public class Piglet2SpigletVisitor extends GJNoArguDepthFirst<String> {
 	 */
 	public String visit(Temp n) {
 		String res = "TEMP " + n.f1.f0.tokenImage;
-		this.document.write(res);
+	//	String tmp =this.document.getNewTemp();
+		
+	//	this.document.write("MOVE",tmp,res);
 		return res;
 	}
 
@@ -254,15 +264,19 @@ public class Piglet2SpigletVisitor extends GJNoArguDepthFirst<String> {
 	 * f0 -> <INTEGER_LITERAL>
 	 */
 	public String visit(IntegerLiteral n) {
-		this.document.write(n.f0.tokenImage);
-		return n.f0.tokenImage;
+		
+		String tmp=this.document.getNewTemp();
+		this.document.write("MOVE",tmp,n.f0.tokenImage);
+		return tmp;
 	}
 
 	/**
 	 * f0 -> <IDENTIFIER>
 	 */
 	public String visit(Label n) {
+		//String tmp=this.document.getNewTemp();
 		this.document.write(n.f0.tokenImage);
+		//this.document.write("MOVE",tmp,n.f0.tokenImage);
 		return n.f0.tokenImage;
 	}
 
@@ -297,7 +311,7 @@ class CodeManager {
 			sb.append(" ");
 		else {
 			for (int i = 0; i < currentTab; ++i)
-				sb.append(" ");
+				sb.append("\t");
 			flag = true;
 		}
 		sb.append(ar[0]);
@@ -323,7 +337,7 @@ class CodeManager {
 
 	public void writeEnd() {
 		for (int i = 0; i < currentTab; ++i)
-			sb.append(" ");
+			sb.append("\t");
 		sb.append("END");
 		currentTab = currentTab - 1;
 		flag = true;
@@ -333,7 +347,7 @@ class CodeManager {
 		sb.append("\n");
 		currentTab = currentTab + 1;
 		for (int i = 0; i < currentTab; ++i)
-			sb.append(" ");
+			sb.append("\t");
 		sb.append("BEGIN");
 		flag = true;
 	}
