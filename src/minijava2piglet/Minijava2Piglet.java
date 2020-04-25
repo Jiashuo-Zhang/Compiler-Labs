@@ -30,6 +30,7 @@ public class Minijava2Piglet {
 			root.accept(new TypeCheckVisitor(), classList);
 
 			ToPigletVisitor v = new ToPigletVisitor();
+			classList.buildVDTable();
 			//classList.alloc(20);
 			int p=classList.alloc(20);
 			v.setAllClassList(classList);
