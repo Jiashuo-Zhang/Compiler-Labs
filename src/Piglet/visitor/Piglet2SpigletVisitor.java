@@ -1,439 +1,346 @@
 package visitor;
-import java.util.ArrayList;
+
+import java.util.Enumeration;
+
 import syntaxtree.*;
 
-public class Piglet2SpigletVisitor extends DepthFirstVisitor
-{
- CodeManager document = null;
- Piglet2SpigletVisitor()
- {
-	 this.document=new CodeManager();
- }
- public void setDocumentCurrentTemp(int a)
- {
-	 this.document.currentTemp=a;
-	 return;
- }
- public int  getDocumentCurrentTemp()
- {
-	 return this.document.currentTemp;
- }
- public CodeManager getDocument()
- {
-	 return this.document;
- }
- 
- 
- /**
-  * f0 -> "MAIN"
-  * f1 -> StmtList()
-  * f2 -> "END"
-  * f3 -> ( Procedure() )*
-  * f4 -> <EOF>
-  */
- public void visit(Goal n) {
-   // n.f0.accept(this);
-	this.document.write("MAIN ");
-	document.newline();
-    n.f1.accept(this);
-    document.writeEnd();
-  //  n.f2.accept(this);
-    n.f3.accept(this);
-    //n.f4.accept(this);
- }
+public class Piglet2SpigletVisitor extends GJNoArguDepthFirst<String> {
+	CodeManager document = null;
 
- /**
-  * f0 -> ( ( Label() )? Stmt() )*
-  */
- public void visit(StmtList n) {
-    n.f0.accept(this);
- }
+	public Piglet2SpigletVisitor() {
+		this.document = new CodeManager();
+	}
 
- /**
-  * f0 -> Label()
-  * f1 -> "["
-  * f2 -> IntegerLiteral()
-  * f3 -> "]"
-  * f4 -> StmtExp()
-  */
- public void visit(Procedure n) {
-  //  n.f0.accept(this);
-	document.write(n.f0.f0.tokenImage+"["+n.f2.f0.tokenImage+"]");
-    n.f4.accept(this);
-    document.newline();
- }
+	public void setDocumentCurrentTemp(int a) {
+		this.document.currentTemp = a;
+		return;
+	}
 
- /**
-  * f0 -> NoOpStmt()
-  *       | ErrorStmt()
-  *       | CJumpStmt()
-  *       | JumpStmt()
-  *       | HStoreStmt()
-  *       | HLoadStmt()
-  *       | MoveStmt()
-  *       | PrintStmt()
-  */
- public void visit(Stmt n) {
-    n.f0.accept(this);
- }
+	public int getDocumentCurrentTemp() {
+		return this.document.currentTemp;
+	}
 
- /**
-  * f0 -> "NOOP"
-  */
- public void visit(NoOpStmt n) {
-   // n.f0.accept(this);
-	 this.document.write("NOOP");
-	 this.document.newline();
-	 
- }
+	public String getCode() {
+		return this.document.sb.toString();
+	}
 
- /**
-  * f0 -> "ERROR"
-  */
- public void visit(ErrorStmt n) {
-	this.document.write("ERROR");
-	this.document.newline();
-    //n.f0.accept(this);
- }
+	/**
+	 * f0 -> "MAIN" f1 -> StmtList() f2 -> "END" f3 -> ( Procedure() )* f4 -> <EOF>
+	 */
+	public String visit(Goal n) {
+		this.document.write("MAIN");
+		document.newline();
+		n.f1.accept(this);
+		document.writeEnd();
+		document.newline();
+		n.f3.accept(this);
+		return null;
+	}
 
- /**
-  * f0 -> "CJUMP"
-  * f1 -> Exp()
-  * f2 -> Label()
-  */
- public void visit(CJumpStmt n) {
-	
-  //  n.f0.accept(this);
-	 
-    n.f1.accept(this);
-    document.write("CJUMP ",this.document.lastTemp," ",n.f2.f0.tokenImage);
-   /// n.f2.accept(this);
-    this.document.newline();
- }
+	/**
+	 * f0 -> ( ( Label() )? Stmt() )*
+	 */
+	public String visit(StmtList n) {
+		n.f0.accept(this);
+		return null;
+	}
 
- /**
-  * f0 -> "JUMP"
-  * f1 -> Label()
-  */
- public void visit(JumpStmt n) {
-	 
-   // n.f0.accept(this);
-	this.document.write("JUMP ",n.f1.f0.tokenImage);
-	this.document.newline();
-    //n.f1.accept(this);
- }
+	/**
+	 * f0 -> Label() f1 -> "[" f2 -> IntegerLiteral() f3 -> "]" f4 -> StmtExp()
+	 */
+	public String visit(Procedure n) {
+		// n.f0.accept(this);
+		document.write(n.f0.f0.tokenImage, "[", n.f2.f0.tokenImage, "]");
+		document.newline();
+		n.f4.accept(this);
+		document.newline();
+		return null;
+	}
 
- /**
-  * f0 -> "HSTORE"
-  * f1 -> Exp()
-  * f2 -> IntegerLiteral()
-  * f3 -> Exp()
-  */
- public void visit(HStoreStmt n) {
-	
-   // n.f0.accept(this);
-    n.f1.accept(this);
-    String tmp1=this.document.lastTemp;
-    document.newline();
-   // n.f2.accept(this);
-    n.f3.accept(this);
-    String tmp2=this.document.lastTemp;
-    document.newline();
-    this.document.write("HSTORE ",tmp1," ",n.f2.f0.tokenImage," ",tmp2);
-    this.document.newline();
- }
+	/**
+	 * f0 -> NoOpStmt() | ErrorStmt() | CJumpStmt() | JumpStmt() | HStoreStmt() |
+	 * HLoadStmt() | MoveStmt() | PrintStmt()
+	 */
+	public String visit(Stmt n) {
+		n.f0.accept(this);
+		return null;
+	}
 
- /**
-  * f0 -> "HLOAD"
-  * f1 -> Temp()
-  * f2 -> Exp()
-  * f3 -> IntegerLiteral()
-  */
- public void visit(HLoadStmt n) {
-	n.f2.accept(this);
-	String tmp=this.document.lastTemp;
-	document.newline();
-   // n.f0.accept(this);
-	this.document.write("HLOAD ",tmp," ",n.f3.f0.tokenImage);
-    //n.f1.accept(this);
-   // n.f2.accept(this);
-   // n.f3.accept(this);
- }
+	/**
+	 * f0 -> "NOOP"
+	 */
+	public String visit(NoOpStmt n) {
+		this.document.write("NOOP");
+		this.document.newline();
+		return null;
+	}
 
- /**
-  * f0 -> "MOVE"
-  * f1 -> Temp()
-  * f2 -> Exp()
-  */
- public void visit(MoveStmt n) {
-	n.f2.accept(this);
-	String tmp=this.document.lastTemp;
-	document.newline();
-	document.write("MOVE ");
-    n.f1.accept(this);
-    this.document.write(" ", tmp);
-    this.document.newline();
-    
-  //  n.f1.accept(this);
-   // n.f2.accept(this);
- }
+	/**
+	 * f0 -> "ERROR"
+	 */
+	public String visit(ErrorStmt n) {
+		this.document.write("ERROR");
+		this.document.newline();
+		return null;
+	}
 
- /**
-  * f0 -> "PRINT"
-  * f1 -> Exp()
-  */
- public void visit(PrintStmt n) {
-  //  n.f0.accept(this);
-    n.f1.accept(this);
-    String tmp=document.lastTemp;
-    document.newline();
-    document.write("PRINT ",tmp);
-    this.document.newline();
- }
+	/**
+	 * f0 -> "CJUMP" f1 -> Exp() f2 -> Label()
+	 */
+	public String visit(CJumpStmt n) {
+		String tmp1 = n.f1.accept(this);
+		this.document.newline();
 
- /**
-  * f0 -> StmtExp()
-  *       | Call()
-  *       | HAllocate()
-  *       | BinOp()
-  *       | Temp()
-  *       | IntegerLiteral()
-  *       | Label()
-  */
- public void visit(Exp n) {
-	document.write("MOVE ");
-	String tmp=this.document.getNewTemp();
-	document.write(tmp," ");
-	Piglet2SpigletVisitor now =new Piglet2SpigletVisitor();
-	now.setDocumentCurrentTemp(this.document.currentTemp);
-	n.f0.accept(now);
-	this.setDocumentCurrentTemp(now.getDocumentCurrentTemp());
-	this.document.write(now.document.sb);
-	this.document.lastTemp=tmp;
-	this.document.tempList.add(tmp);
-    n.f0.accept(this);
- }
+		document.write("CJUMP", tmp1, n.f2.f0.tokenImage);
+		this.document.newline();
+		return null;
+	}
 
- /**
-  * f0 -> "BEGIN"
-  * f1 -> StmtList()
-  * f2 -> "RETURN"
-  * f3 -> Exp()
-  * f4 -> "END"
-  */
- public void visit(StmtExp n) {
-    this.document.writeBegin();
-    n.f1.accept(this);
-   // n.f2.accept(this);
-    n.f3.accept(this);
-    document.write("RETURN ", this.document.lastTemp);
-    document.writeEnd();
-    
-   // n.f4.accept(this);
- }
+	/**
+	 * f0 -> "JUMP" f1 -> Label()
+	 */
+	public String visit(JumpStmt n) {
+		this.document.write("JUMP", n.f1.f0.tokenImage);
+		this.document.newline();
+		return null;
+	}
 
- /**
-  * f0 -> "CALL"
-  * f1 -> Exp()
-  * f2 -> "("
-  * f3 -> ( Exp() )*
-  * f4 -> ")"
-  */
- public void visit(Call n) {
-  //  n.f0.accept(this);
-    n.f1.accept(this);
-    String tmp1=this.document.lastTemp;
-    this.document.newline();
-    this.document.ClearTempList();
-    n.f3.accept(this);
-    this.document.newline();
-    this.document.write("CALL ",tmp1," ","(");
-  //  n.f2.accept(this)
-    for (String temp: this.document.tempList)
-    {
-    	document.write(temp,' ');
-    }
-    document.write(")");
-    this.document.ClearTempList();
-   // n.f4.accept(this);
- }
+	/**
+	 * f0 -> "HSTORE" f1 -> Exp() f2 -> IntegerLiteral() f3 -> Exp()
+	 */
+	public String visit(HStoreStmt n) {
+		String tmp1 = n.f1.accept(this);
+		document.newline();
+		String tmp2 = n.f3.accept(this);
+		document.newline();
 
- /**
-  * f0 -> "HALLOCATE"
-  * f1 -> Exp()
-  */
- public void visit(HAllocate n) {
-    //n.f0.accept(this);
-	 
-    n.f1.accept(this);
-    document.write("HALLOCATE ",this.document.lastTemp);
- }
+		this.document.write("HSTORE", tmp1, n.f2.f0.tokenImage, tmp2);
+		this.document.newline();
+		return null;
+	}
 
- /**
-  * f0 -> Operator()
-  * f1 -> Exp()
-  * f2 -> Exp()
-  */
- public void visit(BinOp n) {
-  //  n.f0.accept(this);
-    n.f1.accept(this);
-    String tmp1=this.document.lastTemp;
-    n.f2.accept(this);
-    String tmp2=this.document.lastTemp;
-    String op=new String();
-    if(n.f0.f0.which==0)
-    {
-    	op="LT";
-    }
-    else if(n.f0.f0.which==1)
-    {
-    	op="PLUS";
-    }
-    else if(n.f0.f0.which==2)
-    {
-    	op="MINUS";
-    }
-    else 
-    {
-    	op="TIMES";
-    }
-    document.write(op,' ',tmp1,' ',tmp2,' ');
-    document.newline();
-   // n.f2.accept(this);
- }
+	/**
+	 * f0 -> "HLOAD" f1 -> Temp() f2 -> Exp() f3 -> IntegerLiteral()
+	 */
+	public String visit(HLoadStmt n) {
+		String tmp1 = n.f2.accept(this);
+		document.newline();
 
- /**
-  * f0 -> "LT"
-  *       | "PLUS"
-  *       | "MINUS"
-  *       | "TIMES"
-  */
- public void visit(Operator n) {
-    n.f0.accept(this);
- }
+		this.document.write("HLOAD");
+		n.f1.accept(this);
+		this.document.write(tmp1, n.f3.f0.tokenImage);
+		document.newline();
+		return null;
+	}
 
- /**
-  * f0 -> "TEMP"
-  * f1 -> IntegerLiteral()
-  */
- public void visit(Temp n) {
-    //n.f0.accept(this);
-   // n.f1.accept(this);
-	 this.document.write("TEMP ",n.f1.f0.tokenImage);
- }
+	/**
+	 * f0 -> "MOVE" f1 -> Temp() f2 -> Exp()
+	 */
+	public String visit(MoveStmt n) {
+		String tmp1 = n.f2.accept(this);
+		document.newline();
 
- /**
-  * f0 -> <INTEGER_LITERAL>
-  */
- public void visit(IntegerLiteral n) {
-	this.document.write(" ",n.f0.tokenImage," ");
-    //n.f0.accept(this);
- }
+		this.document.write("MOVE");
+		n.f1.accept(this);
+		this.document.write(tmp1);
+		this.document.newline();
+		return null;
+	}
 
- /**
-  * f0 -> <IDENTIFIER>
-  */
- public void visit(Label n) {
-  //  n.f0.accept(this);
-	 this.document.write(" ",n.f0.tokenImage,' ');
- }
+	/**
+	 * f0 -> "PRINT" f1 -> Exp()
+	 */
+	public String visit(PrintStmt n) {
+		String tmp1 = n.f1.accept(this);
+		this.document.newline();
 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
+		this.document.write("PRINT", tmp1);
+		this.document.newline();
+		return null;
+	}
+
+	/**
+	 * f0 -> StmtExp() | Call() | HAllocate() | BinOp() | Temp() | IntegerLiteral()
+	 * | Label()
+	 */
+	public String visit(Exp n) {
+		return n.f0.accept(this);
+	}
+
+	/**
+	 * f0 -> "BEGIN" f1 -> StmtList() f2 -> "RETURN" f3 -> Exp() f4 -> "END"
+	 */
+	public String visit(StmtExp n) {
+		this.document.writeBegin();
+		n.f1.accept(this);
+		String tmp1 = n.f3.accept(this);
+		this.document.newline();
+
+		document.write("RETURN", tmp1);
+		document.writeEnd();
+		return tmp1;
+	}
+
+	/**
+	 * f0 -> "CALL" f1 -> Exp() f2 -> "(" f3 -> ( Exp() )* f4 -> ")"
+	 */
+	public String visit(Call n) {
+		String tmp1 = n.f1.accept(this);
+		String tmp2 = this.document.getNewTemp();
+		this.document.newline();
+		StringBuffer argList = new StringBuffer();
+
+		if (n.f3.present()) {
+			for (Enumeration<Node> e = n.f3.elements(); e.hasMoreElements();) {
+				String arg = e.nextElement().accept(this);
+				this.document.newline();
+				argList.append(arg + " ");
+			}
+		}
+		
+		this.document.write("MOVE", tmp2, "CALL", tmp1, "(", argList.toString().trim(), ")");
+		
+		return tmp2;
+	}
+
+	/**
+	 * f0 -> "HALLOCATE" f1 -> Exp()
+	 */
+	public String visit(HAllocate n) {
+		String tmp1 = n.f1.accept(this);
+		String tmp2 = this.document.getNewTemp();
+		this.document.newline();
+		
+		document.write("MOVE", tmp2, "HALLOCATE", tmp1);
+		return tmp2;
+	}
+
+	/**
+	 * f0 -> Operator() f1 -> Exp() f2 -> Exp()
+	 */
+	public String visit(BinOp n) {
+		// n.f0.accept(this);
+		String tmp1 = n.f1.accept(this);
+		this.document.newline();
+		String tmp2 = n.f2.accept(this);
+		this.document.newline();
+		String tmp3 = this.document.getNewTemp();
+		
+		String op = new String();
+		if (n.f0.f0.which == 0) {
+			op = "LT";
+		} else if (n.f0.f0.which == 1) {
+			op = "PLUS";
+		} else if (n.f0.f0.which == 2) {
+			op = "MINUS";
+		} else {
+			op = "TIMES";
+		}
+		
+		document.write("MOVE", tmp3, op, tmp1, tmp2);
+		return tmp3;
+	}
+
+	/**
+	 * f0 -> "TEMP" f1 -> IntegerLiteral()
+	 */
+	public String visit(Temp n) {
+		String res = "TEMP " + n.f1.f0.tokenImage;
+		this.document.write(res);
+		return res;
+	}
+
+	/**
+	 * f0 -> <INTEGER_LITERAL>
+	 */
+	public String visit(IntegerLiteral n) {
+		this.document.write(n.f0.tokenImage);
+		return n.f0.tokenImage;
+	}
+
+	/**
+	 * f0 -> <IDENTIFIER>
+	 */
+	public String visit(Label n) {
+		this.document.write(n.f0.tokenImage);
+		return n.f0.tokenImage;
+	}
+
 }
 
 class CodeManager {
 
- StringBuffer sb;
- int currentTemp, currentTab, currentLabel;
- boolean flag;
- 
- ArrayList<String> tempList=new ArrayList<String>();
- String lastTemp=null;
- // boolean breakpoint=false;
+	StringBuffer sb;
+	int currentTemp, currentTab, currentLabel;
+	boolean flag;
 
- public CodeManager() {
-  sb = new StringBuffer();
-  currentTemp = 0;
-  currentTab = 0;
-  currentLabel = 0;
-  flag = false;
- }
- public void ClearTempList()
- {
-	 this.tempList=new ArrayList<String>();
- }
- 
+	public CodeManager() {
+		sb = new StringBuffer();
+		currentTemp = 0;
+		currentTab = 0;
+		currentLabel = 0;
+		flag = false;
+	}
 
- public CodeManager(int tmp) {
-  sb = new StringBuffer();
-  currentTemp = tmp;
-  currentTab = 0;
-  currentLabel = 0;
-  flag = false;
- }
+	public CodeManager(int tmp) {
+		sb = new StringBuffer();
+		currentTemp = tmp;
+		currentTab = 0;
+		currentLabel = 0;
+		flag = false;
+	}
 
- public void write(Object... ar) {
-  if (ar.length == 0)
-   return;
-  if (flag)
-   sb.append(" ");
-  else {
-   for (int i = 0; i < currentTab; ++i)
-    sb.append(" ");
-   flag = true;
-  }
-  sb.append(ar[0]);
-  for (int i = 1; i < ar.length; ++i) {
-   sb.append(" ");
-   sb.append(ar[i].toString());
-  }
+	public void write(Object... ar) {
+		if (ar.length == 0)
+			return;
+		if (flag)
+			sb.append(" ");
+		else {
+			for (int i = 0; i < currentTab; ++i)
+				sb.append(" ");
+			flag = true;
+		}
+		sb.append(ar[0]);
+		for (int i = 1; i < ar.length; ++i) {
+			sb.append(" ");
+			sb.append(ar[i].toString());
+		}
 
- }
+	}
 
- public void writeLabel(String lbl) {
-  sb.append(lbl);
-  sb.append("\n");
- }
+	public void writeLabel(String lbl) {
+		sb.append(lbl);
+		sb.append("\n");
+	}
 
- public String getNewLabel() {
-  return "label_" + (++currentLabel);
- }
+	public String getNewLabel() {
+		return "label_" + (++currentLabel);
+	}
 
- public String getNewTemp() {
-  return "TEMP " + (currentTemp++);
- }
+	public String getNewTemp() {
+		return "TEMP " + (currentTemp++);
+	}
 
- public void writeEnd() {
-  for (int i = 0; i < currentTab; ++i)
-   sb.append(" ");
-  sb.append("END");
-  currentTab = currentTab - 1;
-  flag = true;
- }
+	public void writeEnd() {
+		for (int i = 0; i < currentTab; ++i)
+			sb.append(" ");
+		sb.append("END");
+		currentTab = currentTab - 1;
+		flag = true;
+	}
 
- public void writeBegin() {
-  sb.append("\n");
-  currentTab = currentTab + 1;
-  for (int i = 0; i < currentTab; ++i)
-   sb.append(" ");
-  sb.append("BEGIN");
-  flag = true;
- }
+	public void writeBegin() {
+		sb.append("\n");
+		currentTab = currentTab + 1;
+		for (int i = 0; i < currentTab; ++i)
+			sb.append(" ");
+		sb.append("BEGIN");
+		flag = true;
+	}
 
- public void newline() {
-  sb.append("\n");
-  flag = false;
- }
+	public void newline() {
+		sb.append("\n");
+		flag = false;
+	}
 
 }
