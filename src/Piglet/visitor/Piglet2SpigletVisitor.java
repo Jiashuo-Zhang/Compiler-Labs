@@ -29,12 +29,12 @@ public class Piglet2SpigletVisitor extends GJNoArguDepthFirst<String> {
 	 */
 	public String visit(Goal n) {
 		this.document.write("MAIN");
-		document.newline();
+		this.document.newline();
 		
 		n.f1.accept(this);
 		
-		document.write("END");
-		document.newline();
+		this.document.write("END");
+		this.document.newline();
 		
 		n.f3.accept(this);
 		
@@ -53,18 +53,18 @@ public class Piglet2SpigletVisitor extends GJNoArguDepthFirst<String> {
 	 * f0 -> Label() f1 -> "[" f2 -> IntegerLiteral() f3 -> "]" f4 -> StmtExp()
 	 */
 	public String visit(Procedure n) {
-		document.newline();
+		this.document.newline();
 		
-		document.write(n.f0.f0.tokenImage, "[", n.f2.f0.tokenImage, "]");
-		document.writeBegin();
-		document.newline();
+		this.document.write(n.f0.f0.tokenImage, "[", n.f2.f0.tokenImage, "]");
+		this.document.writeBegin();
+		this.document.newline();
 		
 		String tmp1 = n.f4.accept(this);
 		
-		document.write("RETURN", tmp1);
+		this.document.write("RETURN", tmp1);
 		this.document.newline();
 		
-		document.writeEnd();
+		this.document.writeEnd();
 		this.document.newline();
 
 		return null;
@@ -105,7 +105,7 @@ public class Piglet2SpigletVisitor extends GJNoArguDepthFirst<String> {
 	public String visit(CJumpStmt n) {
 		String tmp1 = n.f1.accept(this);
 
-		document.write("CJUMP", tmp1, n.f2.f0.tokenImage);
+		this.document.write("CJUMP", tmp1, n.f2.f0.tokenImage);
 		this.document.newline();
 		
 		return null;
@@ -144,7 +144,7 @@ public class Piglet2SpigletVisitor extends GJNoArguDepthFirst<String> {
 		String tmp2 = n.f2.accept(this);
 
 		this.document.write("HLOAD", tmp1, tmp2, n.f3.f0.tokenImage);
-		document.newline();
+		this.document.newline();
 		
 		return null;
 	}
@@ -222,7 +222,7 @@ public class Piglet2SpigletVisitor extends GJNoArguDepthFirst<String> {
 		String tmp1 = n.f1.accept(this);
 		String tmp2 = this.document.getNewTemp();
 
-		document.write("MOVE", tmp2, "HALLOCATE", tmp1);
+		this.document.write("MOVE", tmp2, "HALLOCATE", tmp1);
 		this.document.newline();
 		
 		return tmp2;
@@ -248,7 +248,7 @@ public class Piglet2SpigletVisitor extends GJNoArguDepthFirst<String> {
 			op = "TIMES";
 		}
 
-		document.write("MOVE", tmp3, op, tmp1, tmp2);
+		this.document.write("MOVE", tmp3, op, tmp1, tmp2);
 		this.document.newline();
 		
 		return tmp3;
