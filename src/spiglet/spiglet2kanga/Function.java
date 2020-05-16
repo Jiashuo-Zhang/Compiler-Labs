@@ -236,10 +236,44 @@ public class Function {
 		s.add(v);
 		neighbor.put(u, s);
 	}
-
+	public int isSpilled(Integer id)///TEMP id
+	{
+		Integer reg= tmp2reg.get(id);
+		if(reg==null)
+		{
+			return -1;
+		}
+		if(reg>=0 && reg<16)
+		{
+			return 0;
+		}
+		else 
+		{
+			return 1;
+		}
+	}
+	public String getRegName(Integer reg)//// Reg id
+	{
+		String res = null;
+		if (reg >= 0) {
+			if (reg < 8)
+				res = "s" + reg;
+			else if (reg < 18)
+				res = "t" + (reg - 8);
+			else
+				res = "v" + (reg - 18);
+		} else
+			res = "SPILLEDARG " + (-reg - 1);
+		return res;
+	
+	}
 	public String queryReg(Integer id) {
 		Integer reg = tmp2reg.get(id);
 		String res = null;
+		if(reg==null)
+		{
+			return null;
+		}
 		if (reg >= 0) {
 			if (reg < 8)
 				res = "s" + reg;

@@ -8,11 +8,13 @@ public class Environment {
 	public Statement currentStmt;
 	public CodeManager document;
 	public boolean isInStmt;
+	public int isParam;
 
 	public Environment() {
 		funcTable = new HashMap<String, Function>();
 		document = new CodeManager();
 		isInStmt = false;
+		isParam=-1;
 	}
 
 	public void addFunc() {

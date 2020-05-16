@@ -1,5 +1,5 @@
 package spiglet2kanga;
-
+import visitor.*;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -23,7 +23,11 @@ public class Main {
 			env.buildFlowGraph();
 			env.livenessAnalysis();
 			env.allocReg();
-			env.debug();
+			//env.debug();
+			spiglet2kangaVisitor visitor=new spiglet2kangaVisitor();
+			root.accept(visitor,env);
+			System.out.println(env.document.sb);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
