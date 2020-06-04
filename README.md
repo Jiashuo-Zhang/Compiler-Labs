@@ -402,7 +402,7 @@ END
 #### 栈的维护
 如图。其中SpilledArg 0到SpilledArg n-1是如何安排的参考作业4。具体来说，从SpilledArg 0到SpilledArg (paraCnt-5)放置溢出的参变量。从SpilledArg (paraCnt-4)到SpilledArg (n-17)放置溢出的其他变量。从SpilledArg n-16到SpilledArg n-1是保存/恢复用于寄存器分配的16个寄存器（s0-s7, t0-t7）。
 
-![]()
+![Stack Frame](https://github.com/Jiashuo-Zhang/Compiler-Labs/blob/master/src/kanga/StackFrame.png)
 
 #### 翻译思路
 常用的抽象成函数（halloc, print, abort）。
