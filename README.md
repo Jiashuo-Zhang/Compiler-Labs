@@ -391,3 +391,25 @@ END
 
 #### 翻译
 待补充。
+
+## 作业5：把kanga代码翻译成mips汇编代码
+
+### 作业简介
+和kanga相比，最大的区别主要是需要自己维护栈。
+
+### 设计
+
+#### 栈的维护
+如图。其中SpilledArg 0到SpilledArg n-1是如何安排的参考作业4。具体来说，从SpilledArg 0到SpilledArg (paraCnt-5)放置溢出的参变量。从SpilledArg (paraCnt-4)到SpilledArg (n-17)放置溢出的其他变量。从SpilledArg n-16到SpilledArg n-1是保存/恢复用于寄存器分配的16个寄存器（s0-s7, t0-t7）。
+
+![]()
+
+#### 翻译思路
+常用的抽象成函数（halloc, print, abort）。
+
+对于stmt级别的直接翻译。
+
+对于exp级别的，返回一个String，表示exp的内容。特别注意的是对于二元运算的翻译，直接翻译成四元式形式，对于四元式的dst先用一个"hole"占位，在外层的MOVE中再填这个hole。
+
+### 实现
+直接看代码。
