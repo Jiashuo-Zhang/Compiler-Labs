@@ -817,7 +817,7 @@ Mips和kanga相比，最大的区别是需要自己维护栈。具体来说，ka
 对于栈帧的维护体现了我们翻译出的mips代码的一些约定，如外层的函数可以修改调用的内层函数的栈帧（kanga也可以，利用passarg），又如我们的16个寄存器都是由被调用者保存/恢复的，和mips本身的寄存器使用规则有所区别。虽然有这种区别，但是只要我们翻译的每个函数都遵守这种规则，那么整体的运行也是没有问题的。
 
 #### 翻译思路
-把常用一些语句段的抽象成函数（如halloc, print, abort）。
+把常用的一些语句段抽象成函数（如halloc, print, abort）。
 
 ```java
 	// 封装的halloc
@@ -990,5 +990,5 @@ Mips和kanga相比，最大的区别是需要自己维护栈。具体来说，ka
 	}
 ```
 
-如果该exp是一个simpleexp，就根据simpleexp的类型生成代码；如果该exp是一个HAllocate，在翻译HAllocate时，结果已经放在了寄存器v0中，所以只需要再把v0的值move到需要的寄存器r1中；如果该exp是一个BinOp，用到了写回技术，在翻译BinOp时，会把BinOp中的SimpleExp加载到寄存器a0中，然后直接翻译成四元式形式，形如op hole r1 $a0（例如ADD hole $s1 $a0），把这个四元式以字符串的形式返回到MoveStmt中，然后在MoveStmt中，把字符串中的hole换成目标寄存器（例如目标寄存器是t0，就把hole字符串替换成t0，最终生成的代码是ADD $t0 $s1 $a0）输出到docment中。
+如果该exp是一个simpleexp，就根据simpleexp的类型生成代码；如果该exp是一个HAllocate，在翻译HAllocate时，结果已经放在了寄存器v0中，所以只需要再把v0的值move到需要的寄存器r1中；如果该exp是一个BinOp，用到了回写技术，在翻译BinOp时，会把BinOp中的SimpleExp加载到寄存器a0中，然后直接翻译成四元式形式，形如op hole r1 $a0（例如ADD hole $s1 $a0），把这个四元式以字符串的形式返回到MoveStmt中，然后在MoveStmt中，把字符串中的hole换成目标寄存器（例如目标寄存器是t0，就把hole字符串替换成t0，最终生成的代码是ADD $t0 $s1 $a0）输出到docment中。
 
