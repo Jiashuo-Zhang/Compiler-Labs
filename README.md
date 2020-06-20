@@ -803,22 +803,192 @@ public static void main(String[] args) throws IOException {
 
 ## lab5：Kanga to Mips
 
-Mips和kanga相比，最大的区别是需要自己维护栈。这一部分的主要功能在于在代码中维护栈。
+## 概述
+Mips和kanga相比，最大的区别是需要自己维护栈。具体来说，kanga有运行时栈，相当于一个局部数组，但Mips没有这个局部数组，需要我们在栈（全局数组）的基础上来实现一个“局部数组”，即kanga中的运行时栈。那么就会用到栈帧这种结构（包含了栈顶栈底指针esp和ebp）。
 
 ### 设计思路
 
 #### 栈的维护
-如图。其中SpilledArg 0到SpilledArg n-1是如何安排的参考作业4。具体来说，从SpilledArg 0到SpilledArg (paraCnt-5)放置溢出的参变量。从SpilledArg (paraCnt-4)到SpilledArg (n-17)放置溢出的其他变量。从SpilledArg n-16到SpilledArg n-1是保存/恢复用于寄存器分配的16个寄存器（s0-s7, t0-t7）。
+上文说到，对于每个函数，kanga都有运行时栈，那么栈中存放什么东西呢？存放的是SpilledArg。现在我们需要手动地把SpilledArg放到栈上（而不是使用Passarg）。其中SpilledArg 0到SpilledArg n-1是如何安排的参考作业4。具体来说，从SpilledArg 0到SpilledArg (paraCnt-5)放置溢出的参变量。从SpilledArg (paraCnt-4)到SpilledArg (n-17)放置溢出的其他变量。从SpilledArg n-16到SpilledArg n-1是保存/恢复用于寄存器分配的16个寄存器（s0-s7, t0-t7）。除此之外，mips的运行时栈上还需要保存该函数调用完之后应该执行的下一条指令ra和外层函数的栈底指针ebp（即mips中的fp）。整个栈帧的安排如图。
+
 
 ![StackFrame](/Users/zhangjiashuo/Desktop/course/编译实习/面测/HW5_1700012838_1700012848/StackFrame.png)
 
+对于栈帧的维护体现了我们翻译出的mips代码的一些约定，如外层的函数可以修改调用的内层函数的栈帧（kanga也可以，利用passarg），又如我们的16个寄存器都是由被调用者保存/恢复的，和mips本身的寄存器使用规则有所区别。虽然有这种区别，但是只要我们翻译的每个函数都遵守这种规则，那么整体的运行也是没有问题的。
+
 #### 翻译思路
-常用的抽象成函数（halloc, print, abort）。
+把常用一些语句段的抽象成函数（如halloc, print, abort）。
 
-对于stmt级别的直接翻译。
+```java
+	// 封装的halloc
+	argu.document.writeln(".text");
+	argu.document.writeln(".globl _halloc");
+	argu.document.writeLabel("_halloc:");
+	argu.document.writeln("li $v0 9");
+	argu.document.writeln("syscall");
+	argu.document.writeln("jr $ra");
+	argu.document.newline();
 
-对于exp级别的，返回一个String，表示exp的内容。特别注意的是对于二元运算的翻译，直接翻译成四元式形式，对于四元式的dst先用一个"hole"占位，在外层的MOVE中再填这个hole。
+	// 封装的print
+	argu.document.writeln(".text");
+	argu.document.writeln(".globl _print");
+	argu.document.writeLabel("_print:");
+	argu.document.writeln("li $v0 1");
+	argu.document.writeln("syscall");
+	argu.document.writeln("la $a0 newl");
+	argu.document.writeln("li $v0 4");
+	argu.document.writeln("syscall");
+	argu.document.writeln("jr $ra");
+	argu.document.newline();
 
-### 代码实现
-代码实现位于Kanga2MipsVisitor.java
+	// 封装的abort
+	argu.document.writeln(".text");
+	argu.document.writeln(".globl _abort");
+	argu.document.writeLabel("_abort:");
+	argu.document.writeln("la $a0 str_er");
+	argu.document.writeln("li $v0 4");
+	argu.document.writeln("syscall");
+	argu.document.writeln("li $v0 10");
+	argu.document.writeln("syscall");
+	argu.document.newline();
+
+	// 换行字符串
+	argu.document.writeln(".data");
+	argu.document.writeln(".align 0");
+	argu.document.writeLabel("newl:");
+	argu.document.writeln(".asciiz \"\\n\"");
+	argu.document.newline();
+
+	// 报错字符串
+	argu.document.writeln(".data");
+	argu.document.writeln(".align 0");
+	argu.document.writeLabel("str_er:");
+	argu.document.writeln(".asciiz \"ERROR: abnormal termination\\n\"");
+	argu.document.newline();
+```
+
+在进入函数的时候，要为当前函数创建栈帧。具体来说，把外层函数的栈底保存，把ra保存，把栈顶根据大小（spilledCnt+2）扩张。
+
+```java
+	argu.document.writeln(".text");
+	argu.document.writeln(".globl", name);
+	argu.document.writeLabel(name + ":");
+	argu.document.writeln("sw $fp -8($sp)");
+	argu.document.writeln("sw $ra -4($sp)");
+	argu.document.writeln("move $fp $sp");
+	argu.document.writeln("subu $sp $sp", (spilledCnt + 2) * 4);
+```
+
+在退出函数的时候，要恢复。具体来说，把栈底换成外层函数的栈底，把下一条语句ra更新，把当前函数的栈帧弹出栈中。
+
+```java
+	argu.document.writeln("lw $ra -4($fp)");
+	argu.document.writeln("lw $fp -8($fp)");
+	argu.document.writeln("addu $sp $sp", (spilledCnt + 2) * 4);
+	argu.document.writeln("jr $ra");
+	argu.document.newline();
+```
+
+对于函数内部的语句，它们都是stmt级别的，直接翻译。以HStoreStmt为例：
+
+```java
+	/**
+	 * f0 -> "HSTORE" f1 -> Reg() f2 -> IntegerLiteral() f3 -> Reg()
+	 */
+	public String visit(HStoreStmt n, Environment argu) {
+		String r1 = n.f1.accept(this, argu);
+		String r2 = n.f3.accept(this, argu);
+		int offset = Integer.valueOf(n.f2.f0.tokenImage);
+		argu.document.writeln("sw", r2, offset + "(" + r1 + ")");
+		return null;
+	}
+```
+
+对于stmt内部的遍历，会遍历到exp级别的节点，exp有三种。对于simpleexp，此时返回一个String，表示exp的内容。以Label为例：
+
+```java
+	/**
+	 * f0 -> <IDENTIFIER>
+	 */
+	public String visit(Label n, Environment argu) {
+		String lbl = n.f0.tokenImage;
+		if (!argu.isInStmt) {
+			argu.document.writeLabel(lbl + ":");
+		}
+		return lbl;
+	}
+```
+
+如果这个label是在stmt内部的，就说明这是一种simpleexp（如函数的名字），直接返回label的内容。如果这个label不在stmt内部，就说明是stmt之间用于控制跳转的label，就生成对应的代码。
+
+对于非simpleexp的其他exp，可以发现只有movestmt会用到。下面是MoveStmt、HAllocate和BinOp的翻译：
+
+```java
+	/**
+	 * f0 -> "MOVE" f1 -> Reg() f2 -> Exp()
+	 */
+	public String visit(MoveStmt n, Environment argu) {
+		String r1 = n.f1.accept(this, argu);
+		String exp = n.f2.accept(this, argu);
+		Node choice = n.f2.f0.choice;
+		if (choice instanceof SimpleExp) {
+			Node choice2 = ((SimpleExp) n.f2.f0.choice).f0.choice;
+			String op = null;
+			if (choice2 instanceof IntegerLiteral) {
+				op = "li";
+			} else if (choice2 instanceof Label) {
+				op = "la";
+			} else {
+				op = "move";
+			}
+			argu.document.writeln(op, r1, exp);
+		} else if (choice instanceof HAllocate) {
+			argu.document.writeln("move", r1, "$v0");
+		} else {
+			r1 = r1.replaceAll("\\$", "RDS_CHAR_DOLLAR");
+			exp = exp.replaceFirst("hole", r1);
+			exp = exp.replaceAll("RDS_CHAR_DOLLAR", "\\$");
+			argu.document.writeln(exp);
+		}
+		return null;
+	}
+	
+	/**
+	 * f0 -> "HALLOCATE" f1 -> SimpleExp()
+	 */
+	public String visit(HAllocate n, Environment argu) {
+		String r1 = n.f1.accept(this, argu);
+		Node choice = n.f1.f0.choice;
+		if (choice instanceof IntegerLiteral) {
+			argu.document.writeln("li $a0", r1);
+		} else if (choice instanceof Label) {
+			argu.document.writeln("la $a0", r1);
+		} else {
+			argu.document.writeln("move $a0", r1);
+		}
+		argu.document.writeln("jal _halloc");
+		return "$v0";
+	}
+
+	/**
+	 * f0 -> Operator() f1 -> Reg() f2 -> SimpleExp()
+	 */
+	public String visit(BinOp n, Environment argu) {
+		String op = n.f0.accept(this, argu);
+		String r1 = n.f1.accept(this, argu);
+		String r2 = n.f2.accept(this, argu);
+		Node choice = n.f2.f0.choice;
+		if (choice instanceof IntegerLiteral) {
+			argu.document.writeln("li $a0", r2);
+		} else if (choice instanceof Label) {
+			argu.document.writeln("la $a0", r2);
+		} else {
+			argu.document.writeln("move $a0", r2);
+		}
+		String _ret = op + " hole " + r1 + " $a0";
+		return _ret;
+	}
+```
+
+如果该exp是一个simpleexp，就根据simpleexp的类型生成代码；如果该exp是一个HAllocate，在翻译HAllocate时，结果已经放在了寄存器v0中，所以只需要再把v0的值move到需要的寄存器r1中；如果该exp是一个BinOp，用到了写回技术，在翻译BinOp时，会把BinOp中的SimpleExp加载到寄存器a0中，然后直接翻译成四元式形式，形如op hole r1 $a0（例如ADD hole $s1 $a0），把这个四元式以字符串的形式返回到MoveStmt中，然后在MoveStmt中，把字符串中的hole换成目标寄存器（例如目标寄存器是t0，就把hole字符串替换成t0，最终生成的代码是ADD $t0 $s1 $a0）输出到docment中。
 
