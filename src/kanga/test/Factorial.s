@@ -1,40 +1,4 @@
 				.text
-				.globl _halloc
-_halloc:
-				li $v0 9
-				syscall
-				jr $ra
-
-				.text
-				.globl _print
-_print:
-				li $v0 1
-				syscall
-				la $a0 newl
-				li $v0 4
-				syscall
-				jr $ra
-
-				.text
-				.globl _abort
-_abort:
-				la $a0 str_er
-				li $v0 4
-				syscall
-				li $v0 10
-				syscall
-
-				.data
-				.align 0
-newl:
-				.asciiz "\n"
-
-				.data
-				.align 0
-str_er:
-				.asciiz "ERROR: abnormal termination\n"
-
-				.text
 				.globl main
 main:
 				sw $fp -8($sp)
@@ -75,6 +39,8 @@ main:
 				lw $ra -4($fp)
 				lw $fp -8($fp)
 				addu $sp $sp 8
+				li $v0, 10
+				syscall
 				jr $ra
 
 				.text
@@ -157,3 +123,39 @@ label_2:
 				lw $fp -8($fp)
 				addu $sp $sp 72
 				jr $ra
+
+				.text
+				.globl _halloc
+_halloc:
+				li $v0 9
+				syscall
+				jr $ra
+
+				.text
+				.globl _print
+_print:
+				li $v0 1
+				syscall
+				la $a0 newl
+				li $v0 4
+				syscall
+				jr $ra
+
+				.text
+				.globl _abort
+_abort:
+				la $a0 str_er
+				li $v0 4
+				syscall
+				li $v0 10
+				syscall
+
+				.data
+				.align 0
+newl:
+				.asciiz "\n"
+
+				.data
+				.align 0
+str_er:
+				.asciiz "ERROR: abnormal termination\n"
