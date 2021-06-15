@@ -1,7 +1,5 @@
 # 编译实习实验报告
 
-**游凌云(1700012838), 张家硕(1700012848)**
-
 ## 概述
 
 本实验实现了一个Minijava编译器，功能为将Minijava源程序转化为Mips程序。具体步骤为：对Minijava源程序进行语义检查(lab1), 将Minijava源程序翻译成Piglet程序(lab2)，将Piglet程序翻译成Spiglet程序(lab3)，将Spiglet程序转化成Kanga程序(lab4)，将Kanga程序转换成mips程序(lab5)。下面我们将详细介绍每个步骤的设计思路、方法和代码实现，其中，我们也介绍了实验中遇到的问题、错误与积累的经验。
